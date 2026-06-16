@@ -289,8 +289,8 @@
     "url": "https://github.com/Anduin2017/HowToCook",
     "addedAt": "2026-06-16",
     "deployment": {
-      "type": "local",
-      "path": "/how-to-cook",
+      "type": "iframe",
+      "url": "https://cook.aiurs.co",
       "deployedAt": "2026-06-17",
       "label": "做饭指南"
     },
