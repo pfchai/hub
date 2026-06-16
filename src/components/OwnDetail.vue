@@ -62,6 +62,35 @@
       <h2>💡 心得 & 教训</h2>
       <div class="detail__lessons markdown-body" v-html="renderMarkdown(project.lessons)" />
     </section>
+
+    <section v-if="project.deployment" class="detail__section detail__deployment">
+      <h2 v-if="project.deployment.type === 'local'">🏠 已部署 · {{ project.deployment.label }}</h2>
+      <h2 v-else>🌐 在线体验 · {{ project.deployment.label }}</h2>
+      <p class="detail__deploy-date">部署于 {{ project.deployment.deployedAt }}</p>
+
+      <template v-if="project.deployment.type === 'local'">
+        <a
+          :href="project.deployment.path"
+          class="detail__deploy-link"
+        >📖 打开 {{ project.deployment.label }} →</a>
+      </template>
+
+      <template v-else>
+        <div class="detail__iframe-card">
+          <div class="detail__iframe-bar">
+            <span class="detail__iframe-url">{{ project.deployment.url }}</span>
+            <a :href="project.deployment.url" target="_blank" rel="noopener" class="detail__iframe-ext">↗</a>
+          </div>
+          <iframe
+            :src="project.deployment.url"
+            class="detail__iframe"
+            sandbox="allow-scripts allow-same-origin"
+            loading="lazy"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </template>
+    </section>
   </article>
 </template>
 
@@ -168,4 +197,67 @@ function formatStars(n) {
 .markdown-body :deep(li) { font-size: 0.9rem; margin-bottom: 4px; }
 .markdown-body :deep(code) { font-size: 0.8rem; background: var(--bg-secondary); padding: 1px 5px; border-radius: 3px; }
 .markdown-body :deep(pre) { background: var(--bg-secondary); padding: 12px; border-radius: var(--radius); overflow-x: auto; margin-bottom: 8px; }
+
+.detail__deploy-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.detail__deploy-link {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 150ms;
+}
+
+.detail__deploy-link:hover {
+  background: rgba(34, 197, 94, 0.2);
+  text-decoration: none;
+}
+
+.detail__iframe-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.detail__iframe-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.detail__iframe-url {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.detail__iframe-ext {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.detail__iframe-ext:hover {
+  color: var(--accent);
+}
+
+.detail__iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  background: #fff;
+}
 </style>

@@ -91,4 +91,25 @@ describe('OwnDetail', () => {
     const demoLink = links.find(l => l.text().includes('Live Demo'))
     expect(demoLink).toBeFalsy()
   })
+
+  it('renders local deployment link when project has local deployment', () => {
+    const projectWithLocal = {
+      ...mockProject,
+      deployment: { type: 'local', path: '/my-tool', deployedAt: '2026-06-17', label: '我的工具' },
+    }
+    const wrapper = mount(OwnDetail, { props: { project: projectWithLocal } })
+    const section = wrapper.find('.detail__deployment')
+    expect(section.exists()).toBe(true)
+    expect(section.text()).toContain('我的工具')
+    expect(wrapper.find('.detail__deploy-link').attributes('href')).toBe('/my-tool')
+  })
+
+  it('renders iframe for iframe-type deployment', () => {
+    const projectWithIframe = {
+      ...mockProject,
+      deployment: { type: 'iframe', url: 'https://example.com', deployedAt: '2026-06-17', label: '在线工具' },
+    }
+    const wrapper = mount(OwnDetail, { props: { project: projectWithIframe } })
+    expect(wrapper.find('.detail__iframe').exists()).toBe(true)
+  })
 })
