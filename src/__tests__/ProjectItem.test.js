@@ -78,4 +78,32 @@ describe('ProjectItem', () => {
     const tags = wrapper.findAll('.project-item__tags .tag-badge')
     expect(tags.length).toBe(2)
   })
+
+  it('renders deployment badge for local deployment', () => {
+    const projectWithLocal = {
+      ...mockOwnProject,
+      deployment: { type: 'local', path: '/test', deployedAt: '2026-06-17', label: '测试工具' },
+    }
+    const wrapper = mount(ProjectItem, {
+      props: { project: projectWithLocal, rank: 1 }
+    })
+    const badge = wrapper.find('.project-item__deploy')
+    expect(badge.exists()).toBe(true)
+    expect(badge.text()).toContain('测试工具')
+    expect(badge.classes()).toContain('project-item__deploy--local')
+  })
+
+  it('renders deployment badge for iframe deployment', () => {
+    const projectWithIframe = {
+      ...mockOwnProject,
+      deployment: { type: 'iframe', url: 'https://example.com', deployedAt: '2026-06-17', label: '在线体验' },
+    }
+    const wrapper = mount(ProjectItem, {
+      props: { project: projectWithIframe, rank: 1 }
+    })
+    const badge = wrapper.find('.project-item__deploy')
+    expect(badge.exists()).toBe(true)
+    expect(badge.text()).toContain('在线体验')
+    expect(badge.classes()).toContain('project-item__deploy--iframe')
+  })
 })

@@ -20,6 +20,11 @@
     <div class="project-item__meta">
       <span class="project-item__stars">⭐ {{ formatStars(project.stars) }}</span>
       <span
+        v-if="project.deployment"
+        class="project-item__deploy"
+        :class="`project-item__deploy--${project.deployment.type}`"
+      >{{ project.deployment.type === 'local' ? '🏠 ' : '🌐 ' }}{{ project.deployment.label }}</span>
+      <span
         class="project-item__type"
         :class="`project-item__type--${project.type}`"
       >{{ project.type }}</span>
@@ -102,6 +107,24 @@ function formatStars(n) {
   font-size: 0.8rem;
   color: var(--text-muted);
   white-space: nowrap;
+}
+
+.project-item__deploy {
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.project-item__deploy--local {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.project-item__deploy--iframe {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--accent-curated);
 }
 
 .project-item__type {
