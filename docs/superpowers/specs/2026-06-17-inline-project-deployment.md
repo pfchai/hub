@@ -38,7 +38,9 @@ OR:
 {
   "deployment": {
     "type": "local",
-    "path": "/how-to-cook"
+    "path": "/how-to-cook",
+    "deployedAt": "2026-06-17",
+    "label": "做饭指南"
   }
 }
 ```
@@ -49,10 +51,22 @@ OR:
 {
   "deployment": {
     "type": "iframe",
-    "url": "https://excalidraw.com"
+    "url": "https://excalidraw.com",
+    "deployedAt": "2026-06-17",
+    "label": "在线白板"
   }
 }
 ```
+
+**`deployment` object fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `type` | yes | `"local"` or `"iframe"` |
+| `deployedAt` | yes | ISO date of when deployed/added |
+| `label` | yes | Short Chinese label used in UI badges and buttons |
+| `path` | local only | Sub-path under `public/` |
+| `url` | iframe only | External embed URL |
 
 - `type`: `"local"` | `"iframe"`
 - `path` (local only): sub-path under `public/`, served directly by Vite
@@ -63,10 +77,10 @@ OR:
 
 | Project | Deployment |
 |---------|-----------|
-| HowToCook | `{ "type": "local", "path": "/how-to-cook" }` |
-| Gift Book | `{ "type": "local", "path": "/gift-book" }` |
-| Excalidraw | `{ "type": "iframe", "url": "https://excalidraw.com" }` |
-| Slidev | `{ "type": "iframe", "url": "https://sli.dev" }` |
+| HowToCook | `{ "type": "local", "path": "/how-to-cook", "deployedAt": "2026-06-17", "label": "做饭指南" }` |
+| Gift Book | `{ "type": "local", "path": "/gift-book", "deployedAt": "2026-06-17", "label": "电子礼簿" }` |
+| Excalidraw | `{ "type": "iframe", "url": "https://excalidraw.com", "deployedAt": "2026-06-17", "label": "在线白板" }` |
+| Slidev | `{ "type": "iframe", "url": "https://sli.dev", "deployedAt": "2026-06-17", "label": "演示文稿" }` |
 
 ## 3. Build Script
 
@@ -102,18 +116,18 @@ Subsequently: `hub.pfchai.com/how-to-cook/` and `hub.pfchai.com/gift-book/` are 
 
 Add a deployment badge next to the type badge in the list row:
 
-- `deployment.type === "local"` → show `🏠 已部署` pill (green/blue tint)
-- `deployment.type === "iframe"` → show `🌐 在线体验` pill (purple tint)
+- `deployment.type === "local"` → show `🏠 ` + `deployment.label` (green/blue tint pill)
+- `deployment.type === "iframe"` → show `🌐 ` + `deployment.label` (purple tint pill)
 - `null` / absent → no badge
 
 The badge is small, same visual style as the type badge. Appears between the star count and the type badge.
 
 ### 4.2 CuratedDetail.vue — Deployment Section
 
-Add a deployment section between the existing highlights section and the bottom. Logic:
+Add a deployment section between the existing highlights section and the bottom. Include `deployedAt` as a date subtitle (e.g., `部署于 2026-06-17`).
 
-- **local:** Show a call-to-action card: `🏠 已部署 — 可以直接使用此工具` with a link/button `📖 打开使用 →` pointing to `deployment.path`.
-- **iframe:** Show an embedded iframe card with a header bar showing `deployment.url` and a `↗` external link. Below it, an `<iframe>` that fills the content width with `aspect-ratio: 16/9`.
+- **local:** `🏠 已部署 · {{ deployment.label }}` header with deployment date. A CTA link `📖 打开 {{ deployment.label }} →` pointing to `deployment.path`.
+- **iframe:** `🌐 在线体验 · {{ deployment.label }}` header with deployment date. Embedded iframe card with URL bar and `<iframe sandbox>`.
 - **null:** Don't render the section.
 
 The iframe should include `sandbox="allow-scripts allow-same-origin"` and `loading="lazy"` for security and performance.
@@ -126,8 +140,8 @@ Same treatment as CuratedDetail. Own projects can also have deployment. The depl
 
 Update existing tests to handle the new `deployment` field:
 
-- **ProjectItem.test.js:** Add 2 tests — renders `🏠 已部署` for local, renders `🌐 在线体验` for iframe.
-- **CuratedDetail.test.js:** Add 2 tests — renders iframe element for iframe deployment, renders "打开使用" link for local.
+- **ProjectItem.test.js:** Add 2 tests — renders `deployment.label` for local, renders `deployment.label` for iframe.
+- **CuratedDetail.test.js:** Add 2 tests — renders iframe for iframe deployment, renders local link for local deployment.
 - **OwnDetail.test.js:** Add similar tests for deployment display.
 - **useProjects.test.js:** No changes needed (data field is transparent to the composable).
 
