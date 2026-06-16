@@ -48,20 +48,20 @@ describe('useProjects', () => {
 
   it('searches projects by text matching title, tagline, and tags', () => {
     const { search, filteredProjects } = useProjects()
-    search('GPT')
+    search('白板')
     expect(filteredProjects.value.length).toBeGreaterThan(0)
     expect(filteredProjects.value.every(p =>
-      p.title.toLowerCase().includes('gpt') ||
-      p.tagline.toLowerCase().includes('gpt') ||
-      p.tags.some(t => t.toLowerCase().includes('gpt'))
+      p.title.toLowerCase().includes('白板') ||
+      p.tagline.toLowerCase().includes('白板') ||
+      p.tags.some(t => t.toLowerCase().includes('白板'))
     )).toBe(true)
   })
 
   it('getProject returns project by id', () => {
     const { getProject } = useProjects()
-    const project = getProject('ai-code-reviewer')
+    const project = getProject('hub')
     expect(project).toBeDefined()
-    expect(project.title).toBe('AI Code Reviewer')
+    expect(project.title).toBe('Hub')
   })
 
   it('getProject returns undefined for unknown id', () => {
