@@ -66,4 +66,31 @@ describe('CuratedDetail', () => {
     const demoLink = links.find(l => l.text().includes('Demo'))
     expect(demoLink).toBeFalsy()
   })
+
+  it('renders iframe deployment section for iframe-type deployment', () => {
+    const projectWithIframe = {
+      ...mockProject,
+      deployment: { type: 'iframe', url: 'https://example.com', deployedAt: '2026-06-17', label: '在线体验' },
+    }
+    const wrapper = mount(CuratedDetail, { props: { project: projectWithIframe } })
+    const section = wrapper.find('.detail__deployment')
+    expect(section.exists()).toBe(true)
+    expect(section.text()).toContain('在线体验')
+    expect(section.text()).toContain('2026-06-17')
+    expect(wrapper.find('.detail__iframe').exists()).toBe(true)
+  })
+
+  it('renders local deployment link for local-type deployment', () => {
+    const projectWithLocal = {
+      ...mockProject,
+      deployment: { type: 'local', path: '/test-tool', deployedAt: '2026-06-17', label: '测试工具' },
+    }
+    const wrapper = mount(CuratedDetail, { props: { project: projectWithLocal } })
+    const section = wrapper.find('.detail__deployment')
+    expect(section.exists()).toBe(true)
+    const link = wrapper.find('.detail__deploy-link')
+    expect(link.exists()).toBe(true)
+    expect(link.attributes('href')).toBe('/test-tool')
+    expect(link.text()).toContain('测试工具')
+  })
 })
