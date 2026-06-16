@@ -1,0 +1,79 @@
+[
+  {
+    "id": "ai-code-reviewer",
+    "type": "own",
+    "title": "AI Code Reviewer",
+    "tagline": "用 GPT-4 自动 review 代码，支持 GitLab 和 GitHub",
+    "description": "在日常 code review 中发现很多问题模式是重复的，于是尝试用 AI 来自动化第一轮审查，减少人工 review 的负担。",
+    "tags": ["Vue", "OpenAI", "Vite"],
+    "stars": 128,
+    "url": "https://github.com/user/ai-code-reviewer",
+    "demo": "https://ai-reviewer.demo.example.com",
+    "cover": "/screenshots/ai-reviewer.png",
+    "addedAt": "2026-03-15",
+    "story": "## 为什么做这个项目\n\n在日常 code review 中发现很多问题模式是重复的。命名规范、空值检查、安全漏洞等基础问题占用了大量时间。\n\n## 技术挑战\n\n最大的挑战是如何让 AI 输出一致的、可操作的 review 意见。",
+    "techDecisions": [
+      { "choice": "Vue 3", "reason": "快速原型开发，SFC 对内容型页面友好" },
+      { "choice": "OpenAI API", "reason": "GPT-4 的代码理解能力在同类中最好" }
+    ],
+    "screenshots": [],
+    "lessons": "最大的坑是 prompt engineering 比写代码更重要。反复调整 prompt 模板花了大部分开发时间。"
+  },
+  {
+    "id": "vibecoding-hub",
+    "type": "own",
+    "title": "VibeCoding Hub",
+    "tagline": "收集优质 vibe coding 项目的中文导航站",
+    "description": "一个中文社区驱动的 vibe coding 项目导航站，帮助开发者发现和学习 AI 辅助编程的优秀实践。",
+    "tags": ["Vue", "Vite", "GitHub Pages"],
+    "stars": 56,
+    "url": "https://github.com/user/vibecoding-hub",
+    "demo": "https://vibecoding.example.com",
+    "addedAt": "2026-05-20",
+    "story": "## 灵感来源\n\nVibe coding 这个概念越来越火，但中文社区缺少一个系统性的项目导航。",
+    "techDecisions": [
+      { "choice": "纯静态站点", "reason": "内容型网站不需要后端，维护成本低" }
+    ],
+    "screenshots": [],
+    "lessons": "内容策展类网站最重要的是信息架构和可维护性，功能不是越多越好。"
+  },
+  {
+    "id": "excalidraw",
+    "type": "curated",
+    "title": "Excalidraw",
+    "tagline": "手绘风格白板工具，开源协作绘图",
+    "description": "Excalidraw 是一个开源的虚拟协作白板工具，让你画出具有手绘风格的图表和线框图。支持实时协作，拥有丰富的插件生态。",
+    "tags": ["React", "Canvas", "TypeScript"],
+    "stars": 98200,
+    "url": "https://github.com/excalidraw/excalidraw",
+    "addedAt": "2026-01-10",
+    "whyRecommend": "这是我见过最好的开源白板工具，API 设计优雅，扩展性强，非常适合作为学习 React + Canvas 的参考项目。",
+    "highlights": ["手绘风格渲染算法 — 让每条线看起来都是人画的", "实时协作架构 — WebSocket + CRDT 实现", "优秀的插件系统设计 — 易于扩展"]
+  },
+  {
+    "id": "tldraw",
+    "type": "curated",
+    "title": "tldraw",
+    "tagline": "无限画布白板 SDK，开发者优先",
+    "description": "tldraw 是一个无限画布白板 SDK，提供了强大的 API 让开发者可以构建自定义的白板应用。",
+    "tags": ["React", "TypeScript", "Canvas"],
+    "stars": 41000,
+    "url": "https://github.com/tldraw/tldraw",
+    "addedAt": "2026-02-18",
+    "whyRecommend": "如果你需要在产品中嵌入白板功能，tldraw 是目前最好的 SDK 选择，文档详尽，API 设计合理。",
+    "highlights": ["SDK 化设计 — 不是工具而是平台", "完美的 TypeScript 类型支持", "丰富的示例和文档"]
+  },
+  {
+    "id": "slidev",
+    "type": "curated",
+    "title": "Slidev",
+    "tagline": "用 Markdown 写演示文稿，开发者专属 PPT 工具",
+    "description": "Slidev 让开发者用 Markdown 编写演示文稿，支持代码高亮、Vue 组件嵌入、实时预览等特性。",
+    "tags": ["Vue", "Vite", "Markdown"],
+    "stars": 35000,
+    "url": "https://github.com/slidevjs/slidev",
+    "addedAt": "2026-03-01",
+    "whyRecommend": "彻底改变了开发者做技术分享的方式。把 PPT 变成了可版本控制、可复用的代码。",
+    "highlights": ["Markdown 驱动 — 开发者最熟悉的工作流", "Vue 组件嵌入 — 演示可以包含交互式 demo", "WYSIWYG 编辑体验"]
+  }
+]
