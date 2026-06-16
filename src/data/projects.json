@@ -29,6 +29,12 @@
     "stars": 98200,
     "url": "https://github.com/excalidraw/excalidraw",
     "addedAt": "2026-01-10",
+    "deployment": {
+      "type": "iframe",
+      "url": "https://excalidraw.com",
+      "deployedAt": "2026-06-17",
+      "label": "在线白板"
+    },
     "whyRecommend": "最好的开源白板工具之一，API 设计优雅，扩展性强，是学习 React + Canvas 的绝佳参考项目。",
     "highlights": ["手绘风格渲染算法", "实时协作架构 WebSocket + CRDT", "优秀的插件系统设计"]
   },
@@ -55,6 +61,12 @@
     "stars": 35000,
     "url": "https://github.com/slidevjs/slidev",
     "addedAt": "2026-03-01",
+    "deployment": {
+      "type": "iframe",
+      "url": "https://sli.dev",
+      "deployedAt": "2026-06-17",
+      "label": "演示文稿"
+    },
     "whyRecommend": "彻底改变了开发者做技术分享的方式。PPT 变成了可版本控制、可复用的代码。",
     "highlights": ["Markdown 驱动的工作流", "Vue 组件嵌入演示", "所见即所得编辑"]
   },
@@ -276,6 +288,12 @@
     "stars": 100795,
     "url": "https://github.com/Anduin2017/HowToCook",
     "addedAt": "2026-06-16",
+    "deployment": {
+      "type": "local",
+      "path": "/how-to-cook",
+      "deployedAt": "2026-06-17",
+      "label": "做饭指南"
+    },
     "whyRecommend": "最有趣的开源项目之一。用工程师思维解决日常问题，堪称程序员生活手册的标杆。",
     "highlights": ["精确量化配方", "社区协作维护", "程序员视角的独特表达"]
   },
@@ -289,6 +307,12 @@
     "stars": 1205,
     "url": "https://github.com/jingguanzhang/gift-book",
     "addedAt": "2026-06-16",
+    "deployment": {
+      "type": "local",
+      "path": "/gift-book",
+      "deployedAt": "2026-06-17",
+      "label": "电子礼簿"
+    },
     "whyRecommend": "接地气的实用工具，解决真实痛点。界面简洁，完全离线可用，适合不熟悉技术的用户。",
     "highlights": ["完全离线运行", "Excel/PDF 报表导出", "专为红白喜事场景设计"]
   },
