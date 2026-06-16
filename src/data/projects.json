@@ -267,6 +267,32 @@
     "highlights": ["纯 Shell 实现", "系统监控", "应用清理"]
   },
   {
+    "id": "how-to-cook",
+    "type": "curated",
+    "title": "HowToCook",
+    "tagline": "程序员在家做饭指南，拒绝「适量」",
+    "description": "一份由社区维护的程序员做饭指南。用程序员的方式教你做饭——精确量化、拒绝模糊的「适量」，让每个人都能复现。",
+    "tags": ["Guide", "Chinese"],
+    "stars": 100795,
+    "url": "https://github.com/Anduin2017/HowToCook",
+    "addedAt": "2026-06-16",
+    "whyRecommend": "最有趣的开源项目之一。用工程师思维解决日常问题，堪称程序员生活手册的标杆。",
+    "highlights": ["精确量化配方", "社区协作维护", "程序员视角的独特表达"]
+  },
+  {
+    "id": "gift-book",
+    "type": "curated",
+    "title": "Gift Book",
+    "tagline": "开源免费离线电子礼簿，红白喜事礼金管理",
+    "description": "一款开源免费、完全离线的现代化电子礼簿系统。专为红白喜事设计，提供高效录入、Excel/PDF 专业报表导出的一站式礼金管理方案。",
+    "tags": ["HTML", "Utility", "Chinese"],
+    "stars": 1205,
+    "url": "https://github.com/jingguanzhang/gift-book",
+    "addedAt": "2026-06-16",
+    "whyRecommend": "接地气的实用工具，解决真实痛点。界面简洁，完全离线可用，适合不熟悉技术的用户。",
+    "highlights": ["完全离线运行", "Excel/PDF 报表导出", "专为红白喜事场景设计"]
+  },
+  {
     "id": "clone-wars",
     "type": "curated",
     "title": "Clone Wars",
