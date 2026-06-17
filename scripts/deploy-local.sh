@@ -45,42 +45,64 @@ else
   echo "  HowToCook: skip (already built)"
 fi
 
-# === Excalidraw (wget mirror with retries) ===
-if [ ! -d "public/excalidraw" ] || [ "$1" = "--force" ]; then
-  echo "  Building Excalidraw (downloading built site)..."
-  rm -rf public/excalidraw _deploy/excalidraw-site
-  wget -q --mirror --convert-links --page-requisites --no-parent \
-       --tries=3 --timeout=30 --waitretry=10 \
-       --directory-prefix=_deploy/excalidraw-site https://excalidraw.com/ || true
-  if [ -d "_deploy/excalidraw-site/excalidraw.com" ]; then
-    cp -r _deploy/excalidraw-site/excalidraw.com public/excalidraw
-    rm -rf _deploy/excalidraw-site
-    echo "    Done"
-  else
-    echo "    ⚠️ wget mirror failed, skipping Excalidraw (will use last deployed version)"
-    FAILED="$FAILED excalidraw"
-  fi
-else
-  echo "  Excalidraw: skip (already built)"
-fi
+# === tldraw (curl-based mirror with retries) ===
+if [ ! -d "public/tldraw" ] || [ "$1" = "--force" ]; then
+  echo "  Building tldraw (fetching built site)..."
+  rm -rf public/tldraw _deploy/tldraw-site
+  mkdir -p _deploy/tldraw-site/www.tldraw.com/assets
 
-# === Slidev (wget mirror with retries) ===
-if [ ! -d "public/slidev" ] || [ "$1" = "--force" ]; then
-  echo "  Building Slidev (downloading built site)..."
-  rm -rf public/slidev _deploy/slidev-site
-  wget -q --mirror --convert-links --page-requisites --no-parent \
-       --tries=3 --timeout=30 --waitretry=10 \
-       --directory-prefix=_deploy/slidev-site https://sli.dev/ || true
-  if [ -d "_deploy/slidev-site/sli.dev" ]; then
-    cp -r _deploy/slidev-site/sli.dev public/slidev
-    rm -rf _deploy/slidev-site
-    echo "    Done"
+  # Step 1: Download index.html
+  curl -sL --retry 3 --retry-delay 10 --max-time 30 \
+       -o _deploy/tldraw-site/www.tldraw.com/index.html \
+       https://www.tldraw.com/ || true
+
+  if [ -f "_deploy/tldraw-site/www.tldraw.com/index.html" ]; then
+    # Step 2: Extract asset URLs (relative or absolute) from index.html and download them
+    (perl -nle 'print $1 while /(?:src|href)="https:\/\/www\.tldraw\.com\/([^"]+)"/g' \
+       _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null
+     perl -nle 'print $1 while /(?:src|href)="\/((?:assets|cf-fonts)\/[^"]+\.(?:js|css|woff2|svg|png|ico|webmanifest))"/g' \
+       _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null
+     perl -nle 'print $1 while /(?:src|href)="\/((?:theme-init|favicon|manifest|apple-touch-icon|robots)[^"]+)"/g' \
+       _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null) | sort -u | \
+      while read -r path; do
+        dir=$(dirname "_deploy/tldraw-site/www.tldraw.com/$path")
+        mkdir -p "$dir"
+        curl -sL --retry 2 --max-time 15 \
+             -o "_deploy/tldraw-site/www.tldraw.com/$path" \
+             "https://www.tldraw.com/$path" 2>/dev/null || true
+      done
+
+    # Step 3: Extract chunk refs from main JS and download
+    MAIN_JS=$(perl -nle 'print $1 if /src="\/?(assets\/index-[A-Za-z0-9]+\.js)"/' \
+      _deploy/tldraw-site/www.tldraw.com/index.html | head -1)
+    if [ -n "$MAIN_JS" ] && [ -f "_deploy/tldraw-site/www.tldraw.com/$MAIN_JS" ]; then
+      perl -nle 'print $1 while /"(assets\/[^"]+\.(?:js|css))"/g' \
+        "_deploy/tldraw-site/www.tldraw.com/$MAIN_JS" | sort -u | \
+        while read -r chunk; do
+          dir=$(dirname "_deploy/tldraw-site/www.tldraw.com/$chunk")
+          mkdir -p "$dir"
+          curl -sL --retry 2 --max-time 15 \
+               -o "_deploy/tldraw-site/www.tldraw.com/$chunk" \
+               "https://www.tldraw.com/$chunk" 2>/dev/null || true
+        done
+    fi
+
+    # Step 4: Rewrite absolute URLs to relative in index.html
+    sed -i '' 's|https://www\.tldraw\.com/|/|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
+    sed -i 's|https://www\.tldraw\.com/|/|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
+
+    # Step 5: Copy to public
+    cp -r _deploy/tldraw-site/www.tldraw.com public/tldraw
+    rm -rf _deploy/tldraw-site
+    echo "    Done ($(find public/tldraw -type f | wc -l | tr -d ' ') files)"
   else
-    echo "    ⚠️ wget mirror failed, skipping Slidev (will use last deployed version)"
-    FAILED="$FAILED slidev"
+    echo "    ⚠️ curl fetch failed, skipping tldraw (will use last deployed version)"
+    FAILED="$FAILED tldraw"
   fi
 else
-  echo "  Slidev: skip (already built)"
+  echo "  tldraw: skip (already built)"
 fi
 
 echo "=== Done ==="

@@ -12,6 +12,18 @@
     <div class="detail__body">
       <a href="#/" class="detail__back">← Back to projects</a>
 
+      <a
+        :href="project.url"
+        target="_blank"
+        rel="noopener"
+        class="detail__source"
+      >
+        <span class="detail__source-icon">⌘</span>
+        <span class="detail__source-label">GitHub</span>
+        <span class="detail__source-url">{{ cleanUrl(project.url) }}</span>
+        <span class="detail__source-arrow">→</span>
+      </a>
+
       <div class="detail__content">
         <!-- Main content column -->
         <div class="detail__main">
@@ -141,6 +153,10 @@ const gradientStyle = computed(() => {
   }
   return 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)'
 })
+
+function cleanUrl(url) {
+  return url.replace(/^https?:\/\//, '')
+}
 </script>
 
 <style scoped>
@@ -186,6 +202,59 @@ const gradientStyle = computed(() => {
 .detail__back:hover {
   color: var(--text-primary);
   text-decoration: none;
+}
+
+/* ===== Source link (GitHub) ===== */
+.detail__source {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background 150ms, border-color 150ms;
+}
+
+.detail__source:hover {
+  background: var(--bg-card);
+  border-color: var(--accent-own);
+  text-decoration: none;
+}
+
+.detail__source-icon {
+  font-size: 1rem;
+}
+
+.detail__source-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.detail__source-url {
+  flex: 1;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail__source-arrow {
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: transform 150ms, color 150ms;
+}
+
+.detail__source:hover .detail__source-arrow {
+  transform: translateX(2px);
+  color: var(--accent-own);
 }
 
 .detail__content {
