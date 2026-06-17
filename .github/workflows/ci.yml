@@ -1,0 +1,39 @@
+# CI — test + build verification for hub (Vue 3 + Vite + Vitest)
+# 优化策略：npm 缓存 + Vitest 并行 + lint→test→build 顺序
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["20", "24"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ===== npm 缓存（setup-node 内置，基于 package-lock.json hash）=====
+      # 依赖不变时 ~5s 恢复，无缓存时 ~90s 重新下载
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      # ===== npm ci 保证版本一致性（比 npm install 更快更可靠）=====
+      - run: npm ci
+
+      # ===== 格式检查放最前（秒级反馈，不需要等测试跑完）=====
+      - run: npm run format -- --check
+        continue-on-error: true
+
+      # ===== 测试：Vitest 默认 pool:threads，自动利用 4 核并行 =====
+      - run: npm test
+
+      # ===== 构建放最后（测试通过才值得构建，节省资源）=====
+      - run: npm run build
