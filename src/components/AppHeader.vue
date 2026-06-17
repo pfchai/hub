@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -66,14 +66,19 @@ function onSearch() {
 }
 
 // Close popover when clicking outside
+let outsideClickHandler = null
+
 watch(searchOpen, (open) => {
   if (open) {
-    const handler = (e) => {
+    outsideClickHandler = (e) => {
       if (searchRef.value && !searchRef.value.contains(e.target)) {
         searchOpen.value = false
       }
     }
-    document.addEventListener('click', handler, { once: true })
+    document.addEventListener('click', outsideClickHandler, { once: true })
+  } else if (outsideClickHandler) {
+    document.removeEventListener('click', outsideClickHandler)
+    outsideClickHandler = null
   }
 })
 
@@ -85,9 +90,13 @@ function handleKeydown(e) {
   }
 }
 
-if (typeof window !== 'undefined') {
+onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
-}
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <style scoped>
