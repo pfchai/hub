@@ -3,3 +3,8 @@ dist/
 .vite/
 *.local
 .superpowers/
+_deploy/
+public/how-to-cook/
+public/excalidraw/
+public/slidev/
+public/gift-book/

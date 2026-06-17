@@ -30,8 +30,8 @@
     "url": "https://github.com/excalidraw/excalidraw",
     "addedAt": "2026-01-10",
     "deployment": {
-      "type": "iframe",
-      "url": "https://excalidraw.com",
+      "type": "local",
+      "path": "/excalidraw",
       "deployedAt": "2026-06-17",
       "label": "在线白板"
     },
@@ -62,8 +62,8 @@
     "url": "https://github.com/slidevjs/slidev",
     "addedAt": "2026-03-01",
     "deployment": {
-      "type": "iframe",
-      "url": "https://sli.dev",
+      "type": "local",
+      "path": "/slidev",
       "deployedAt": "2026-06-17",
       "label": "演示文稿"
     },
@@ -289,8 +289,8 @@
     "url": "https://github.com/Anduin2017/HowToCook",
     "addedAt": "2026-06-16",
     "deployment": {
-      "type": "iframe",
-      "url": "https://cook.aiurs.co",
+      "type": "local",
+      "path": "/how-to-cook",
       "deployedAt": "2026-06-17",
       "label": "做饭指南"
     },
