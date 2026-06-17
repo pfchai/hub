@@ -65,8 +65,16 @@ const {
   resetFilters,
 } = useProjects()
 
-const featuredProjects = computed(() => filteredProjects.value.slice(0, 2))
-const remainingProjects = computed(() => filteredProjects.value.slice(2))
+const featuredProjects = computed(() => {
+  const featured = filteredProjects.value.filter((p) => p.featured)
+  return featured.length > 0
+    ? featured.slice(0, 2)
+    : filteredProjects.value.slice(0, 2)
+})
+const remainingProjects = computed(() => {
+  const featuredIds = new Set(featuredProjects.value.map((p) => p.id))
+  return filteredProjects.value.filter((p) => !featuredIds.has(p.id))
+})
 
 const route = useRoute()
 

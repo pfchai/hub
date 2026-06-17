@@ -29,12 +29,6 @@
     "stars": 98200,
     "url": "https://github.com/excalidraw/excalidraw",
     "addedAt": "2026-01-10",
-    "deployment": {
-      "type": "local",
-      "path": "/excalidraw",
-      "deployedAt": "2026-06-17",
-      "label": "在线白板"
-    },
     "whyRecommend": "最好的开源白板工具之一，API 设计优雅，扩展性强，是学习 React + Canvas 的绝佳参考项目。",
     "highlights": ["手绘风格渲染算法", "实时协作架构 WebSocket + CRDT", "优秀的插件系统设计"]
   },
@@ -61,12 +55,6 @@
     "stars": 35000,
     "url": "https://github.com/slidevjs/slidev",
     "addedAt": "2026-03-01",
-    "deployment": {
-      "type": "local",
-      "path": "/slidev",
-      "deployedAt": "2026-06-17",
-      "label": "演示文稿"
-    },
     "whyRecommend": "彻底改变了开发者做技术分享的方式。PPT 变成了可版本控制、可复用的代码。",
     "highlights": ["Markdown 驱动的工作流", "Vue 组件嵌入演示", "所见即所得编辑"]
   },
@@ -281,6 +269,7 @@
   {
     "id": "how-to-cook",
     "type": "curated",
+    "featured": true,
     "title": "HowToCook",
     "tagline": "程序员在家做饭指南，拒绝「适量」",
     "description": "一份由社区维护的程序员做饭指南。用程序员的方式教你做饭——精确量化、拒绝模糊的「适量」，让每个人都能复现。",
@@ -300,6 +289,7 @@
   {
     "id": "gift-book",
     "type": "curated",
+    "featured": true,
     "title": "Gift Book",
     "tagline": "开源免费离线电子礼簿，红白喜事礼金管理",
     "description": "一款开源免费、完全离线的现代化电子礼簿系统。专为红白喜事设计，提供高效录入、Excel/PDF 专业报表导出的一站式礼金管理方案。",
