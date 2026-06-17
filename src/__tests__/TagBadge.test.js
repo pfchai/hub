@@ -11,7 +11,7 @@ describe('TagBadge', () => {
 
   it('renders as a link when clickable is true', () => {
     const wrapper = mount(TagBadge, {
-      props: { tag: 'React', clickable: true }
+      props: { tag: 'React', clickable: true },
     })
     expect(wrapper.find('a').exists()).toBe(true)
     expect(wrapper.find('a').attributes('href')).toBe('#/tag/React')
@@ -19,7 +19,7 @@ describe('TagBadge', () => {
 
   it('renders as a span when clickable is false', () => {
     const wrapper = mount(TagBadge, {
-      props: { tag: 'React', clickable: false }
+      props: { tag: 'React', clickable: false },
     })
     expect(wrapper.find('a').exists()).toBe(false)
     expect(wrapper.find('span').exists()).toBe(true)
@@ -27,7 +27,7 @@ describe('TagBadge', () => {
 
   it('emits click event when clicked', async () => {
     const wrapper = mount(TagBadge, {
-      props: { tag: 'Vue', clickable: true }
+      props: { tag: 'Vue', clickable: true },
     })
     await wrapper.find('a').trigger('click')
     expect(wrapper.emitted('tag-click')).toBeTruthy()

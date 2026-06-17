@@ -22,7 +22,7 @@ A personal curation website for showcasing the author's own vibe-coding projects
 | Routing | vue-router (hash mode) | SPA routing, GitHub Pages compatible |
 | Styling | Plain CSS with CSS custom properties | No CSS framework overhead, design system via variables |
 | Data | Static JSON (`src/data/projects.json`) | No backend needed, build-time import |
-| Hosting | GitHub Pages or Vercel | Free, auto-deploy on push, global CDN |
+| Hosting | Cloudflare Pages | Free, auto-deploy on push, global CDN |
 | CI/CD | GitHub Actions | Auto build + deploy on push to main |
 
 ### Dependencies (4 packages)

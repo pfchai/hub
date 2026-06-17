@@ -8,19 +8,23 @@ A personal curation website for showcasing vibe-coding projects and handpicked G
 - **Vue 3** (Composition API + SFC) + **Vite**
 - **vue-router** (hash mode) for SPA routing
 - Static JSON data source (`src/data/projects.json`), no backend
-- Deploy to GitHub Pages or Vercel
+- Deploy to Cloudflare Pages (hub.pfchai.com) via GitHub Actions
 
 ### Directory
 ```
 hub/
 ├── src/
-│   ├── views/         ListView.vue, DetailView.vue
-│   ├── components/    ProjectItem, FilterBar, TagBadge, OwnDetail, CuratedDetail, etc.
-│   ├── composables/   useProjects.js (data loading, filter, search)
+│   ├── views/         ListView.vue, DetailView.vue, NotFound.vue
+│   ├── components/    AppHeader, AppFooter, ProjectItem, FilterBar, TagBadge, OwnDetail, CuratedDetail
+│   ├── composables/   useProjects.js (data loading, filter, search, sort)
 │   ├── data/          projects.json (project data source)
-│   ├── router/        vue-router hash mode routes
-│   └── styles/        global.css (CSS variables, design tokens)
-├── public/screenshots/
+│   ├── utils/         format.js, markdown.js
+│   ├── router/        vue-router hash mode routes (lazy loaded)
+│   ├── styles/        global.css (CSS variables, design tokens)
+│   └── __tests__/     component and composable tests
+├── scripts/           deploy-local.sh, build-howtocook.js
+├── public/            static assets + local deployment projects (gitignored)
+├── _deploy/           cloned repos for local builds (gitignored)
 └── docs/superpowers/specs/   Design documents
 ```
 
@@ -31,5 +35,7 @@ hub/
 - **YAGNI**: No backend, no CMS, no analytics, no pagination, no i18n, no SSR.
 
 ### Workflow
-- Edit `src/data/projects.json` → push → auto-deploy
+- Edit `src/data/projects.json` → push → CI runs `deploy-local.sh` → `npm test` → `npm run build` → Cloudflare Pages deploy
+- Local deployment projects: clone to `_deploy/`, build → `public/` (gitignored)
+- Run `bash scripts/deploy-local.sh` to rebuild local projects locally
 - Strict git workflow required

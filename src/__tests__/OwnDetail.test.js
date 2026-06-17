@@ -44,14 +44,14 @@ describe('OwnDetail', () => {
   it('renders GitHub link', () => {
     const wrapper = mount(OwnDetail, { props: { project: mockProject } })
     const links = wrapper.findAll('a')
-    const ghLink = links.find(l => l.attributes('href') === 'https://github.com/user/repo')
+    const ghLink = links.find((l) => l.attributes('href') === 'https://github.com/user/repo')
     expect(ghLink).toBeTruthy()
   })
 
   it('renders demo link when available', () => {
     const wrapper = mount(OwnDetail, { props: { project: mockProject } })
     const links = wrapper.findAll('a')
-    const demoLink = links.find(l => l.attributes('href') === 'https://demo.example.com')
+    const demoLink = links.find((l) => l.attributes('href') === 'https://demo.example.com')
     expect(demoLink).toBeTruthy()
   })
 
@@ -88,7 +88,7 @@ describe('OwnDetail', () => {
     const noDemo = { ...mockProject, demo: undefined }
     const wrapper = mount(OwnDetail, { props: { project: noDemo } })
     const links = wrapper.findAll('a')
-    const demoLink = links.find(l => l.text().includes('Live Demo'))
+    const demoLink = links.find((l) => l.text().includes('Live Demo'))
     expect(demoLink).toBeFalsy()
   })
 
@@ -107,7 +107,12 @@ describe('OwnDetail', () => {
   it('renders iframe for iframe-type deployment', () => {
     const projectWithIframe = {
       ...mockProject,
-      deployment: { type: 'iframe', url: 'https://example.com', deployedAt: '2026-06-17', label: '在线工具' },
+      deployment: {
+        type: 'iframe',
+        url: 'https://example.com',
+        deployedAt: '2026-06-17',
+        label: '在线工具',
+      },
     }
     const wrapper = mount(OwnDetail, { props: { project: projectWithIframe } })
     expect(wrapper.find('.detail__iframe').exists()).toBe(true)

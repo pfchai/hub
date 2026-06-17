@@ -1,20 +1,11 @@
 <template>
-  <a
-    :href="`#/project/${project.id}`"
-    class="project-item"
-  >
+  <a :href="`#/project/${project.id}`" class="project-item">
     <span class="project-item__rank">{{ rank }}.</span>
     <div class="project-item__body">
       <span class="project-item__title">{{ project.title }}</span>
       <span class="project-item__tagline">— {{ project.tagline }}</span>
       <span class="project-item__tags">
-        <TagBadge
-          v-for="tag in project.tags"
-          :key="tag"
-          :tag="tag"
-          clickable
-          @tag-click.stop="() => {}"
-        />
+        <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable @tag-click.stop />
       </span>
     </div>
     <div class="project-item__meta">
@@ -23,27 +14,24 @@
         v-if="project.deployment"
         class="project-item__deploy"
         :class="`project-item__deploy--${project.deployment.type}`"
-      >{{ project.deployment.type === 'local' ? '🏠 ' : '🌐 ' }}{{ project.deployment.label }}</span>
-      <span
-        class="project-item__type"
-        :class="`project-item__type--${project.type}`"
-      >{{ project.type }}</span>
+        >{{ project.deployment.type === 'local' ? '🏠 ' : '🌐 '
+        }}{{ project.deployment.label }}</span
+      >
+      <span class="project-item__type" :class="`project-item__type--${project.type}`">{{
+        project.type
+      }}</span>
     </div>
   </a>
 </template>
 
 <script setup>
 import TagBadge from './TagBadge.vue'
+import { formatStars } from '../utils/format.js'
 
 defineProps({
   project: { type: Object, required: true },
   rank: { type: Number, required: true },
 })
-
-function formatStars(n) {
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
-  return String(n)
-}
 </script>
 
 <style scoped>
@@ -113,7 +101,7 @@ function formatStars(n) {
   font-size: 0.65rem;
   font-weight: 500;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius);
   white-space: nowrap;
 }
 
@@ -132,7 +120,7 @@ function formatStars(n) {
   font-weight: 500;
   text-transform: uppercase;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius);
   white-space: nowrap;
 }
 

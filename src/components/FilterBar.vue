@@ -7,7 +7,9 @@
         class="filter-bar__tab"
         :class="{ 'filter-bar__tab--active': activeType === tab.value }"
         @click="$emit('update:type', tab.value)"
-      >{{ tab.label }}</button>
+      >
+        {{ tab.label }}
+      </button>
     </div>
 
     <div class="filter-bar__tags">
@@ -17,7 +19,9 @@
         class="filter-bar__tag"
         :class="{ 'filter-bar__tag--active': activeTags.has(tag) }"
         @click="$emit('toggle-tag', tag)"
-      >{{ tag }}</button>
+      >
+        {{ tag }}
+      </button>
     </div>
 
     <div class="filter-bar__controls">
@@ -103,7 +107,7 @@ const types = [
   background: var(--bg-primary);
   color: var(--text-muted);
   font-size: 0.75rem;
-  font-family: "JetBrains Mono", "SF Mono", monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
   cursor: pointer;
   transition: all 150ms;
 }

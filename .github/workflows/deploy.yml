@@ -21,6 +21,15 @@ jobs:
 
       - run: npm ci
 
+      - name: Install wget
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq wget
+
+      - name: Build local projects
+        run: bash scripts/deploy-local.sh
+
+      - name: Run tests
+        run: npm test
+
       - run: npm run build
 
       - name: Deploy to Cloudflare Pages

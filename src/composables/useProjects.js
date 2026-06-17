@@ -23,23 +23,22 @@ export function useProjects() {
     let result = [...projects.value]
 
     if (activeType.value === 'own') {
-      result = result.filter(p => p.type === 'own')
+      result = result.filter((p) => p.type === 'own')
     } else if (activeType.value === 'curated') {
-      result = result.filter(p => p.type === 'curated')
+      result = result.filter((p) => p.type === 'curated')
     }
 
     if (activeTags.value.size > 0) {
-      result = result.filter(p =>
-        [...activeTags.value].every(tag => p.tags.includes(tag))
-      )
+      result = result.filter((p) => [...activeTags.value].every((tag) => p.tags.includes(tag)))
     }
 
     if (searchQuery.value.trim()) {
       const q = searchQuery.value.trim().toLowerCase()
-      result = result.filter(p =>
-        p.title.toLowerCase().includes(q) ||
-        p.tagline.toLowerCase().includes(q) ||
-        p.tags.some(t => t.toLowerCase().includes(q))
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.tagline.toLowerCase().includes(q) ||
+          p.tags.some((t) => t.toLowerCase().includes(q))
       )
     }
 
@@ -75,7 +74,7 @@ export function useProjects() {
   }
 
   function getProject(id) {
-    return projects.value.find(p => p.id === id)
+    return projects.value.find((p) => p.id === id)
   }
 
   function resetFilters() {

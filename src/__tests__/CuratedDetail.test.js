@@ -37,7 +37,7 @@ describe('CuratedDetail', () => {
   it('renders GitHub link', () => {
     const wrapper = mount(CuratedDetail, { props: { project: mockProject } })
     const links = wrapper.findAll('a')
-    const ghLink = links.find(l => l.attributes('href') === 'https://github.com/cool/project')
+    const ghLink = links.find((l) => l.attributes('href') === 'https://github.com/cool/project')
     expect(ghLink).toBeTruthy()
   })
 
@@ -63,14 +63,19 @@ describe('CuratedDetail', () => {
   it('does not show demo link (curated projects have no demo)', () => {
     const wrapper = mount(CuratedDetail, { props: { project: mockProject } })
     const links = wrapper.findAll('a')
-    const demoLink = links.find(l => l.text().includes('Demo'))
+    const demoLink = links.find((l) => l.text().includes('Demo'))
     expect(demoLink).toBeFalsy()
   })
 
   it('renders iframe deployment section for iframe-type deployment', () => {
     const projectWithIframe = {
       ...mockProject,
-      deployment: { type: 'iframe', url: 'https://example.com', deployedAt: '2026-06-17', label: '在线体验' },
+      deployment: {
+        type: 'iframe',
+        url: 'https://example.com',
+        deployedAt: '2026-06-17',
+        label: '在线体验',
+      },
     }
     const wrapper = mount(CuratedDetail, { props: { project: projectWithIframe } })
     const section = wrapper.find('.detail__deployment')
@@ -83,7 +88,12 @@ describe('CuratedDetail', () => {
   it('renders local deployment link for local-type deployment', () => {
     const projectWithLocal = {
       ...mockProject,
-      deployment: { type: 'local', path: '/test-tool', deployedAt: '2026-06-17', label: '测试工具' },
+      deployment: {
+        type: 'local',
+        path: '/test-tool',
+        deployedAt: '2026-06-17',
+        label: '测试工具',
+      },
     }
     const wrapper = mount(CuratedDetail, { props: { project: projectWithLocal } })
     const section = wrapper.find('.detail__deployment')

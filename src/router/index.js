@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import ListView from '../views/ListView.vue'
-import DetailView from '../views/DetailView.vue'
+
+const ListView = () => import('../views/ListView.vue')
+const DetailView = () => import('../views/DetailView.vue')
+const NotFound = () => import('../views/NotFound.vue')
 
 const routes = [
   {
@@ -22,6 +24,11 @@ const routes = [
     path: '/search',
     name: 'search',
     component: ListView,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFound,
   },
 ]
 

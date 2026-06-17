@@ -12,9 +12,7 @@
       @update:sort-by="setSort"
     />
 
-    <div class="list-view__count">
-      {{ filteredProjects.length }} 个项目
-    </div>
+    <div class="list-view__count">{{ filteredProjects.length }} 个项目</div>
 
     <div v-if="filteredProjects.length > 0" class="list-view__items">
       <ProjectItem
@@ -33,7 +31,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProjects } from '../composables/useProjects.js'
 import FilterBar from '../components/FilterBar.vue'
@@ -55,14 +53,21 @@ const {
 
 const route = useRoute()
 
-onMounted(() => {
-  if (route.params.tag) {
-    toggleTag(route.params.tag)
-  }
-  if (route.query.q) {
-    search(route.query.q)
-  }
-})
+watch(
+  () => route.params.tag,
+  (newTag) => {
+    if (newTag) toggleTag(newTag)
+  },
+  { immediate: true }
+)
+
+watch(
+  () => route.query.q,
+  (newQuery) => {
+    if (newQuery) search(newQuery)
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>

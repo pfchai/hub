@@ -31,7 +31,7 @@ const mockCuratedProject = {
 describe('ProjectItem', () => {
   it('renders rank number, title, and tagline', () => {
     const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 3 }
+      props: { project: mockOwnProject, rank: 3 },
     })
     expect(wrapper.text()).toContain('3.')
     expect(wrapper.text()).toContain('Test Project')
@@ -40,14 +40,14 @@ describe('ProjectItem', () => {
 
   it('renders star count', () => {
     const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 }
+      props: { project: mockOwnProject, rank: 1 },
     })
     expect(wrapper.text()).toContain('42')
   })
 
   it('renders own type badge for own projects', () => {
     const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 }
+      props: { project: mockOwnProject, rank: 1 },
     })
     const badges = wrapper.findAll('.project-item__type')
     expect(badges.length).toBe(1)
@@ -56,7 +56,7 @@ describe('ProjectItem', () => {
 
   it('renders curated type badge for curated projects', () => {
     const wrapper = mount(ProjectItem, {
-      props: { project: mockCuratedProject, rank: 2 }
+      props: { project: mockCuratedProject, rank: 2 },
     })
     const badge = wrapper.find('.project-item__type--curated')
     expect(badge.exists()).toBe(true)
@@ -65,7 +65,7 @@ describe('ProjectItem', () => {
 
   it('links to project detail page', () => {
     const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 }
+      props: { project: mockOwnProject, rank: 1 },
     })
     const link = wrapper.find('a.project-item')
     expect(link.attributes('href')).toBe('#/project/test-project')
@@ -73,7 +73,7 @@ describe('ProjectItem', () => {
 
   it('renders tags using TagBadge components', () => {
     const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 }
+      props: { project: mockOwnProject, rank: 1 },
     })
     const tags = wrapper.findAll('.project-item__tags .tag-badge')
     expect(tags.length).toBe(2)
@@ -85,7 +85,7 @@ describe('ProjectItem', () => {
       deployment: { type: 'local', path: '/test', deployedAt: '2026-06-17', label: '测试工具' },
     }
     const wrapper = mount(ProjectItem, {
-      props: { project: projectWithLocal, rank: 1 }
+      props: { project: projectWithLocal, rank: 1 },
     })
     const badge = wrapper.find('.project-item__deploy')
     expect(badge.exists()).toBe(true)
@@ -96,10 +96,15 @@ describe('ProjectItem', () => {
   it('renders deployment badge for iframe deployment', () => {
     const projectWithIframe = {
       ...mockOwnProject,
-      deployment: { type: 'iframe', url: 'https://example.com', deployedAt: '2026-06-17', label: '在线体验' },
+      deployment: {
+        type: 'iframe',
+        url: 'https://example.com',
+        deployedAt: '2026-06-17',
+        label: '在线体验',
+      },
     }
     const wrapper = mount(ProjectItem, {
-      props: { project: projectWithIframe, rank: 1 }
+      props: { project: projectWithIframe, rank: 1 },
     })
     const badge = wrapper.find('.project-item__deploy')
     expect(badge.exists()).toBe(true)

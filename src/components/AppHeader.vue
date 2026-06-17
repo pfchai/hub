@@ -5,12 +5,29 @@
       <nav class="header__nav">
         <a href="#/" class="header__link">Home</a>
       </nav>
-      <input type="search" class="header__search" placeholder="Search..." />
+      <input
+        type="search"
+        class="header__search"
+        placeholder="Search..."
+        v-model="searchValue"
+        @keydown.enter="onSearch"
+      />
     </div>
   </header>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const searchValue = ref('')
+
+function onSearch() {
+  if (searchValue.value.trim()) {
+    router.push({ name: 'search', query: { q: searchValue.value.trim() } })
+  }
+}
 </script>
 
 <style scoped>
@@ -33,7 +50,7 @@
 }
 
 .header__logo {
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 1.1rem;
   color: var(--text-primary);
@@ -50,7 +67,9 @@
   font-size: 0.85rem;
   color: var(--text-muted);
   border-radius: var(--radius);
-  transition: color 150ms, background 150ms;
+  transition:
+    color 150ms,
+    background 150ms;
   text-decoration: none;
 }
 

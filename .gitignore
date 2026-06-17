@@ -8,3 +8,5 @@ public/how-to-cook/
 public/excalidraw/
 public/slidev/
 public/gift-book/
+.DS_Store
+*.log

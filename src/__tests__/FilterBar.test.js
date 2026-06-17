@@ -20,7 +20,7 @@ describe('FilterBar', () => {
 
   it('highlights active type tab', () => {
     const wrapper = mount(FilterBar, {
-      props: { ...defaultProps, activeType: 'own' }
+      props: { ...defaultProps, activeType: 'own' },
     })
     const ownTab = wrapper.find('.filter-bar__tab--active')
     expect(ownTab.exists()).toBe(true)
@@ -42,7 +42,7 @@ describe('FilterBar', () => {
 
   it('highlights active tags', () => {
     const wrapper = mount(FilterBar, {
-      props: { ...defaultProps, activeTags: new Set(['Vue']) }
+      props: { ...defaultProps, activeTags: new Set(['Vue']) },
     })
     const vueTag = wrapper.findAll('.filter-bar__tag--active')
     expect(vueTag.length).toBe(1)
@@ -72,7 +72,7 @@ describe('FilterBar', () => {
 
   it('shows search input value from prop', () => {
     const wrapper = mount(FilterBar, {
-      props: { ...defaultProps, searchQuery: 'react' }
+      props: { ...defaultProps, searchQuery: 'react' },
     })
     const input = wrapper.find('.filter-bar__search').element
     expect(input.value).toBe('react')

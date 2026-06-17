@@ -5,19 +5,12 @@
       <p class="detail__tagline">{{ project.tagline }}</p>
       <div class="detail__meta">
         <span class="detail__tags">
-          <TagBadge
-            v-for="tag in project.tags"
-            :key="tag"
-            :tag="tag"
-            clickable
-          />
+          <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable />
         </span>
         <span class="detail__stars">⭐ {{ formatStars(project.stars) }}</span>
       </div>
       <div class="detail__links">
-        <a :href="project.url" target="_blank" rel="noopener" class="detail__link">
-          🔗 GitHub
-        </a>
+        <a :href="project.url" target="_blank" rel="noopener" class="detail__link"> 🔗 GitHub </a>
         <a
           v-if="project.demo"
           :href="project.demo"
@@ -39,7 +32,8 @@
       <h2>🔧 技术选型</h2>
       <ul class="detail__decisions">
         <li v-for="(td, i) in project.techDecisions" :key="i">
-          <strong>{{ td.choice }}</strong>: {{ td.reason }}
+          <strong>{{ td.choice }}</strong
+          >: {{ td.reason }}
         </li>
       </ul>
     </section>
@@ -69,17 +63,22 @@
       <p class="detail__deploy-date">部署于 {{ project.deployment.deployedAt }}</p>
 
       <template v-if="project.deployment.type === 'local'">
-        <a
-          :href="project.deployment.path"
-          class="detail__deploy-link"
-        >📖 打开 {{ project.deployment.label }} →</a>
+        <a :href="project.deployment.path" class="detail__deploy-link"
+          >📖 打开 {{ project.deployment.label }} →</a
+        >
       </template>
 
       <template v-else>
         <div class="detail__iframe-card">
           <div class="detail__iframe-bar">
             <span class="detail__iframe-url">{{ project.deployment.url }}</span>
-            <a :href="project.deployment.url" target="_blank" rel="noopener" class="detail__iframe-ext">↗</a>
+            <a
+              :href="project.deployment.url"
+              target="_blank"
+              rel="noopener"
+              class="detail__iframe-ext"
+              >↗</a
+            >
           </div>
           <iframe
             :src="project.deployment.url"
@@ -97,15 +96,11 @@
 <script setup>
 import TagBadge from './TagBadge.vue'
 import { renderMarkdown } from '../utils/markdown.js'
+import { formatStars } from '../utils/format.js'
 
 defineProps({
   project: { type: Object, required: true },
 })
-
-function formatStars(n) {
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
-  return String(n)
-}
 </script>
 
 <style scoped>
@@ -190,13 +185,43 @@ function formatStars(n) {
   border: 1px solid var(--border);
 }
 
-.markdown-body :deep(h2) { font-size: 1rem; margin-top: 12px; margin-bottom: 6px; }
-.markdown-body :deep(h3) { font-size: 0.9rem; margin-top: 10px; margin-bottom: 4px; }
-.markdown-body :deep(p) { margin-bottom: 8px; font-size: 0.9rem; line-height: 1.7; }
-.markdown-body :deep(ul), .markdown-body :deep(ol) { padding-left: 20px; margin-bottom: 8px; }
-.markdown-body :deep(li) { font-size: 0.9rem; margin-bottom: 4px; }
-.markdown-body :deep(code) { font-size: 0.8rem; background: var(--bg-secondary); padding: 1px 5px; border-radius: 3px; }
-.markdown-body :deep(pre) { background: var(--bg-secondary); padding: 12px; border-radius: var(--radius); overflow-x: auto; margin-bottom: 8px; }
+.markdown-body :deep(h2) {
+  font-size: 1rem;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+.markdown-body :deep(h3) {
+  font-size: 0.9rem;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.markdown-body :deep(p) {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+.markdown-body :deep(li) {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.markdown-body :deep(code) {
+  font-size: 0.8rem;
+  background: var(--bg-secondary);
+  padding: 1px 5px;
+  border-radius: var(--radius);
+}
+.markdown-body :deep(pre) {
+  background: var(--bg-secondary);
+  padding: 12px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin-bottom: 8px;
+}
 
 .detail__deploy-date {
   font-size: 0.8rem;
@@ -240,7 +265,7 @@ function formatStars(n) {
 .detail__iframe-url {
   font-size: 0.75rem;
   color: var(--text-muted);
-  font-family: "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .detail__iframe-ext {

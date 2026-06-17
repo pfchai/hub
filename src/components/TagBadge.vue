@@ -4,7 +4,8 @@
     :href="`#/tag/${tag}`"
     class="tag-badge tag-badge--clickable"
     @click.prevent="$emit('tag-click', tag)"
-  >{{ tag }}</a>
+    >{{ tag }}</a
+  >
   <span v-else class="tag-badge">{{ tag }}</span>
 </template>
 
@@ -20,15 +21,17 @@ defineEmits(['tag-click'])
 <style scoped>
 .tag-badge {
   display: inline-block;
-  font-family: "JetBrains Mono", "SF Mono", monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
   font-size: 0.75rem;
   padding: 1px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   color: var(--text-muted);
   background: var(--bg-secondary);
   white-space: nowrap;
-  transition: border-color 150ms, color 150ms;
+  transition:
+    border-color 150ms,
+    color 150ms;
 }
 
 .tag-badge--clickable {

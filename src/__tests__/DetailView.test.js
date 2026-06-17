@@ -5,16 +5,36 @@ import DetailView from '../views/DetailView.vue'
 vi.mock('../composables/useProjects.js', () => ({
   useProjects: vi.fn(() => ({
     getProject: vi.fn((id) => {
-      if (id === 'my-project') return {
-        id: 'my-project', type: 'own', title: 'My Project', tagline: 'test',
-        tags: ['Vue'], stars: 10, url: 'https://a.com', addedAt: '2026-01-01',
-        description: 'desc', story: '# Hi', techDecisions: [], screenshots: [], lessons: '',
-      }
-      if (id === 'curated') return {
-        id: 'curated', type: 'curated', title: 'Curated', tagline: 'test',
-        tags: ['React'], stars: 100, url: 'https://b.com', addedAt: '2026-01-01',
-        description: 'desc', whyRecommend: 'good', highlights: ['fast'],
-      }
+      if (id === 'my-project')
+        return {
+          id: 'my-project',
+          type: 'own',
+          title: 'My Project',
+          tagline: 'test',
+          tags: ['Vue'],
+          stars: 10,
+          url: 'https://a.com',
+          addedAt: '2026-01-01',
+          description: 'desc',
+          story: '# Hi',
+          techDecisions: [],
+          screenshots: [],
+          lessons: '',
+        }
+      if (id === 'curated')
+        return {
+          id: 'curated',
+          type: 'curated',
+          title: 'Curated',
+          tagline: 'test',
+          tags: ['React'],
+          stars: 100,
+          url: 'https://b.com',
+          addedAt: '2026-01-01',
+          description: 'desc',
+          whyRecommend: 'good',
+          highlights: ['fast'],
+        }
       return undefined
     }),
   })),

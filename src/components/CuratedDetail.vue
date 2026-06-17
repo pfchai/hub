@@ -5,19 +5,12 @@
       <p class="detail__tagline">{{ project.tagline }}</p>
       <div class="detail__meta">
         <span class="detail__tags">
-          <TagBadge
-            v-for="tag in project.tags"
-            :key="tag"
-            :tag="tag"
-            clickable
-          />
+          <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable />
         </span>
         <span class="detail__stars">⭐ {{ formatStars(project.stars) }}</span>
       </div>
       <div class="detail__links">
-        <a :href="project.url" target="_blank" rel="noopener" class="detail__link">
-          🔗 GitHub
-        </a>
+        <a :href="project.url" target="_blank" rel="noopener" class="detail__link"> 🔗 GitHub </a>
       </div>
     </header>
 
@@ -44,17 +37,22 @@
       <p class="detail__deploy-date">部署于 {{ project.deployment.deployedAt }}</p>
 
       <template v-if="project.deployment.type === 'local'">
-        <a
-          :href="project.deployment.path"
-          class="detail__deploy-link"
-        >📖 打开 {{ project.deployment.label }} →</a>
+        <a :href="project.deployment.path" class="detail__deploy-link"
+          >📖 打开 {{ project.deployment.label }} →</a
+        >
       </template>
 
       <template v-else>
         <div class="detail__iframe-card">
           <div class="detail__iframe-bar">
             <span class="detail__iframe-url">{{ project.deployment.url }}</span>
-            <a :href="project.deployment.url" target="_blank" rel="noopener" class="detail__iframe-ext">↗</a>
+            <a
+              :href="project.deployment.url"
+              target="_blank"
+              rel="noopener"
+              class="detail__iframe-ext"
+              >↗</a
+            >
           </div>
           <iframe
             :src="project.deployment.url"
@@ -169,7 +167,7 @@ function formatStars(n) {
 }
 
 .detail__highlights li::before {
-  content: "· ";
+  content: '· ';
   color: var(--accent-curated);
   font-weight: bold;
 }
@@ -216,7 +214,7 @@ function formatStars(n) {
 .detail__iframe-url {
   font-size: 0.75rem;
   color: var(--text-muted);
-  font-family: "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .detail__iframe-ext {
