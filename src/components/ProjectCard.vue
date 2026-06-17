@@ -1,19 +1,26 @@
 <template>
-  <a :href="`#/project/${project.id}`" class="project-card">
-    <div class="project-card__body">
-      <span class="project-card__title">{{ project.title }}</span>
-      <span class="project-card__tagline">{{ project.tagline }}</span>
-    </div>
-    <div class="project-card__footer">
-      <span class="project-card__stars">⭐ {{ formatStars(project.stars) }}</span>
-      <span class="project-card__tags">
-        <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable @tag-click.stop />
-      </span>
-      <span class="project-card__type" :class="`project-card__type--${project.type}`">{{
-        project.type
-      }}</span>
-    </div>
-  </a>
+  <div class="project-card">
+    <a :href="`#/project/${project.id}`" class="project-card__main">
+      <div class="project-card__body">
+        <span class="project-card__title">{{ project.title }}</span>
+        <span class="project-card__tagline">{{ project.tagline }}</span>
+      </div>
+      <div class="project-card__footer">
+        <span class="project-card__stars">⭐ {{ formatStars(project.stars) }}</span>
+        <span class="project-card__tags">
+          <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable @tag-click.stop />
+        </span>
+        <span class="project-card__type" :class="`project-card__type--${project.type}`">{{
+          project.type
+        }}</span>
+      </div>
+    </a>
+    <a
+      v-if="project.deployment && project.deployment.type === 'local'"
+      :href="project.deployment.path"
+      class="project-card__live"
+    >🏠 {{ project.deployment.label }}</a>
+  </div>
 </template>
 
 <script setup>
@@ -27,24 +34,31 @@ defineProps({
 
 <style scoped>
 .project-card {
-  display: block;
-  padding: 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--bg-card);
-  color: var(--text-primary);
-  text-decoration: none;
+  overflow: hidden;
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 
 .project-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  text-decoration: none;
 }
 
 .project-card:active {
   transform: scale(0.98);
+}
+
+.project-card__main {
+  display: block;
+  padding: 14px;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.project-card__main:hover {
+  text-decoration: none;
 }
 
 .project-card__body {
@@ -105,5 +119,22 @@ defineProps({
 
 .project-card__type--curated {
   background: var(--accent-curated);
+}
+
+.project-card__live {
+  display: block;
+  text-align: center;
+  padding: 7px 14px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent-success);
+  border-top: 1px solid var(--border);
+  text-decoration: none;
+  transition: background 150ms;
+}
+
+.project-card__live:hover {
+  background: rgba(34, 197, 94, 0.05);
+  text-decoration: none;
 }
 </style>

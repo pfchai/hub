@@ -96,14 +96,14 @@ describe('FeaturedCard', () => {
     const wrapper = mount(FeaturedCard, {
       props: { project: mockOwnProject },
     })
-    expect(wrapper.find('.featured-card__action').text()).toContain('查看')
+    expect(wrapper.find('.featured-card__action').text()).toContain('详情')
   })
 
   it('links to the project detail page', () => {
     const wrapper = mount(FeaturedCard, {
       props: { project: mockOwnProject },
     })
-    const link = wrapper.find('a.featured-card')
+    const link = wrapper.find('.featured-card__main')
     expect(link.attributes('href')).toBe('#/project/test-project')
   })
 

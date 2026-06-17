@@ -73,7 +73,7 @@ describe('ProjectCard', () => {
     const wrapper = mount(ProjectCard, {
       props: { project: mockOwnProject },
     })
-    const link = wrapper.find('a.project-card')
+    const link = wrapper.find('.project-card__main')
     expect(link.attributes('href')).toBe('#/project/test-project')
   })
 

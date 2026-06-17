@@ -1,27 +1,37 @@
 <template>
-  <a :href="`#/project/${project.id}`" class="featured-card">
-    <div
-      class="featured-card__preview"
-      :style="{ background: gradientStyle }"
+  <div class="featured-card">
+    <a
+      :href="`#/project/${project.id}`"
+      class="featured-card__main"
     >
-      <h2 class="featured-card__preview-title">{{ project.title }}</h2>
-      <div v-if="project.tags && project.tags.length" class="featured-card__preview-tags">
-        <span v-for="tag in project.tags" :key="tag" class="featured-card__tag">{{ tag }}</span>
+      <div
+        class="featured-card__preview"
+        :style="{ background: gradientStyle }"
+      >
+        <h2 class="featured-card__preview-title">{{ project.title }}</h2>
+        <div v-if="project.tags && project.tags.length" class="featured-card__preview-tags">
+          <span v-for="tag in project.tags" :key="tag" class="featured-card__tag">{{ tag }}</span>
+        </div>
       </div>
-    </div>
-    <div class="featured-card__body">
-      <h3 class="featured-card__title">{{ project.title }}</h3>
-      <p class="featured-card__tagline">{{ project.tagline }}</p>
-      <div class="featured-card__footer">
-        <span class="featured-card__stars">⭐ {{ formatStars(project.stars) }}</span>
-        <span
-          class="featured-card__type"
-          :class="`featured-card__type--${project.type}`"
-        >{{ project.type }}</span>
-        <span class="featured-card__action">→ 查看</span>
+      <div class="featured-card__body">
+        <h3 class="featured-card__title">{{ project.title }}</h3>
+        <p class="featured-card__tagline">{{ project.tagline }}</p>
+        <div class="featured-card__footer">
+          <span class="featured-card__stars">⭐ {{ formatStars(project.stars) }}</span>
+          <span
+            class="featured-card__type"
+            :class="`featured-card__type--${project.type}`"
+          >{{ project.type }}</span>
+          <span class="featured-card__action">→ 详情</span>
+        </div>
       </div>
-    </div>
-  </a>
+    </a>
+    <a
+      v-if="project.deployment && project.deployment.type === 'local'"
+      :href="project.deployment.path"
+      class="featured-card__live"
+    >🌐 直接体验</a>
+  </div>
 </template>
 
 <script setup>
@@ -42,24 +52,30 @@ const gradientStyle = computed(() => {
 
 <style scoped>
 .featured-card {
-  display: block;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: var(--bg-card);
-  color: var(--text-primary);
-  text-decoration: none;
   transition: transform 200ms ease-out, box-shadow 200ms ease-out;
 }
 
 .featured-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  text-decoration: none;
 }
 
 .featured-card:active {
   transform: scale(0.98);
+}
+
+.featured-card__main {
+  display: block;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.featured-card__main:hover {
+  text-decoration: none;
 }
 
 .featured-card__preview {
@@ -103,7 +119,7 @@ const gradientStyle = computed(() => {
 }
 
 .featured-card__body {
-  padding: 16px 20px 18px;
+  padding: 16px 20px 14px;
 }
 
 .featured-card__title {
@@ -168,5 +184,22 @@ const gradientStyle = computed(() => {
 
 .featured-card:hover .featured-card__action {
   transform: translateX(3px);
+}
+
+.featured-card__live {
+  display: block;
+  text-align: center;
+  padding: 8px 16px 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent-success);
+  border-top: 1px solid var(--border);
+  text-decoration: none;
+  transition: background 150ms;
+}
+
+.featured-card__live:hover {
+  background: rgba(34, 197, 94, 0.06);
+  text-decoration: none;
 }
 </style>
