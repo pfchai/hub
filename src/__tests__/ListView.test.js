@@ -79,9 +79,9 @@ describe('ListView', () => {
     mockSearch.mockClear()
   })
 
-  it('renders ProjectItem for each project in filteredProjects', () => {
+  it('renders a ProjectCard for each project in filteredProjects', () => {
     const wrapper = mount(ListView)
-    const items = wrapper.findAll('.project-item')
+    const items = wrapper.findAll('.project-card')
     expect(items.length).toBe(3)
   })
 
