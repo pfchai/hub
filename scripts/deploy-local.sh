@@ -3,6 +3,8 @@
 set -e
 cd "$(dirname "$0")/.."
 
+mkdir -p public
+
 echo "=== Building local projects ==="
 
 # === Gift Book ===
