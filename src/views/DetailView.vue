@@ -1,7 +1,5 @@
 <template>
   <div class="detail-view">
-    <a href="#/" class="detail-view__back">← 返回列表</a>
-
     <template v-if="project">
       <OwnDetail v-if="project.type === 'own'" :project="project" />
       <CuratedDetail v-else :project="project" />
@@ -28,22 +26,6 @@ const project = computed(() => getProject(route.params.id))
 </script>
 
 <style scoped>
-.detail-view {
-  padding-top: 8px;
-}
-
-.detail-view__back {
-  display: inline-block;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  transition: color 150ms;
-}
-
-.detail-view__back:hover {
-  color: var(--text-primary);
-}
-
 .detail-view__empty {
   text-align: center;
   padding: 48px 0;
