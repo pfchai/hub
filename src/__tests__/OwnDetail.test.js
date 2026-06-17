@@ -30,10 +30,12 @@ describe('OwnDetail', () => {
     expect(wrapper.text()).toContain('Built with AI assistance')
   })
 
-  it('renders tags as TagBadge components', () => {
+  it('renders tags in sidebar as dark pills', () => {
     const wrapper = mount(OwnDetail, { props: { project: mockProject } })
-    const badges = wrapper.findAll('.tag-badge')
-    expect(badges.length).toBe(2)
+    const tags = wrapper.findAll('.sidebar__tag')
+    expect(tags.length).toBe(2)
+    expect(tags[0].text()).toBe('Vue')
+    expect(tags[1].text()).toBe('OpenAI')
   })
 
   it('renders star count', () => {

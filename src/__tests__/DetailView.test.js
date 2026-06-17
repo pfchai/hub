@@ -57,7 +57,6 @@ describe('DetailView', () => {
     useRoute.mockReturnValue({ params: { id: 'my-project' } })
     const wrapper = mount(DetailView)
     expect(wrapper.text()).toContain('My Project')
-    expect(wrapper.text()).toContain('📖')
   })
 
   it('renders CuratedDetail for curated-type projects', async () => {
@@ -65,14 +64,13 @@ describe('DetailView', () => {
     useRoute.mockReturnValue({ params: { id: 'curated' } })
     const wrapper = mount(DetailView)
     expect(wrapper.text()).toContain('Curated')
-    expect(wrapper.text()).toContain('📝')
   })
 
   it('renders back-to-list link', async () => {
     const { useRoute } = await import('vue-router')
     useRoute.mockReturnValue({ params: { id: 'my-project' } })
     const wrapper = mount(DetailView)
-    const backLink = wrapper.find('.detail-view__back')
+    const backLink = wrapper.find('.detail__back')
     expect(backLink.exists()).toBe(true)
     expect(backLink.attributes('href')).toBe('#/')
   })

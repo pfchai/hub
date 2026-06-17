@@ -23,10 +23,12 @@ describe('CuratedDetail', () => {
     expect(wrapper.text()).toContain('An amazing tool')
   })
 
-  it('renders tags via TagBadge', () => {
+  it('renders tags in sidebar as dark pills', () => {
     const wrapper = mount(CuratedDetail, { props: { project: mockProject } })
-    const badges = wrapper.findAll('.tag-badge')
-    expect(badges.length).toBe(2)
+    const tags = wrapper.findAll('.sidebar__tag')
+    expect(tags.length).toBe(2)
+    expect(tags[0].text()).toBe('React')
+    expect(tags[1].text()).toBe('TypeScript')
   })
 
   it('renders formatted star count', () => {
