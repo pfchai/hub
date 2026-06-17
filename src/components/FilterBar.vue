@@ -93,4 +93,11 @@ const types = [
   border-color: var(--accent-own);
   color: var(--text-primary);
 }
+
+/* ===== Responsive ===== */
+@media (max-width: 767px) {
+  .filter-bar__pills {
+    flex-wrap: wrap;
+  }
+}
 </style>
