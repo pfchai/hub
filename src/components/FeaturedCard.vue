@@ -58,6 +58,10 @@ const gradientStyle = computed(() => {
   text-decoration: none;
 }
 
+.featured-card:active {
+  transform: scale(0.98);
+}
+
 .featured-card__preview {
   height: 120px;
   display: flex;

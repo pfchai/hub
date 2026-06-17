@@ -114,5 +114,20 @@ a:hover {
   padding: 24px 16px 48px;
 }
 
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal-item {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ===== Utility ===== */
 /* .sr-only reserved for future accessibility use */

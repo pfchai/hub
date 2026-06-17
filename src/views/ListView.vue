@@ -23,11 +23,14 @@
       </div>
 
       <div class="list-view__items">
-        <ProjectCard
-          v-for="project in remainingProjects"
+        <div
+          v-for="(project, index) in remainingProjects"
           :key="project.id"
-          :project="project"
-        />
+          class="reveal-item"
+          :ref="(el) => register(el, index * 50)"
+        >
+          <ProjectCard :project="project" />
+        </div>
       </div>
     </template>
 
@@ -42,9 +45,12 @@
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProjects } from '../composables/useProjects.js'
+import { useScrollReveal } from '../composables/useScrollReveal.js'
 import FilterBar from '../components/FilterBar.vue'
 import FeaturedCard from '../components/FeaturedCard.vue'
 import ProjectCard from '../components/ProjectCard.vue'
+
+const { register } = useScrollReveal()
 
 const {
   filteredProjects,
@@ -137,5 +143,17 @@ watch(
 
 .list-view__reset:hover {
   background: var(--bg-secondary);
+}
+
+/* ===== Scroll Reveal ===== */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.reveal-item--visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 </style>
