@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ProjectItem from '../components/ProjectItem.vue'
+import ProjectCard from '../components/ProjectCard.vue'
 
 const mockOwnProject = {
   id: 'test-project',
@@ -28,87 +28,67 @@ const mockCuratedProject = {
   highlights: ['Fast', 'Reliable'],
 }
 
-describe('ProjectItem', () => {
-  it('renders rank number, title, and tagline', () => {
-    const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 3 },
+describe('ProjectCard', () => {
+  it('renders title and tagline', () => {
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockOwnProject },
     })
-    expect(wrapper.text()).toContain('3.')
     expect(wrapper.text()).toContain('Test Project')
     expect(wrapper.text()).toContain('A test project tagline')
   })
 
   it('renders star count', () => {
-    const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 },
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockOwnProject },
     })
     expect(wrapper.text()).toContain('42')
   })
 
-  it('renders own type badge for own projects', () => {
-    const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 },
+  it('renders formatted stars for 1000+', () => {
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockCuratedProject },
     })
-    const badges = wrapper.findAll('.project-item__type')
-    expect(badges.length).toBe(1)
-    expect(badges[0].text()).toBe('own')
+    expect(wrapper.text()).toContain('1k')
+  })
+
+  it('renders own type badge for own projects', () => {
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockOwnProject },
+    })
+    const badge = wrapper.find('.project-card__type--own')
+    expect(badge.exists()).toBe(true)
+    expect(badge.text()).toBe('own')
   })
 
   it('renders curated type badge for curated projects', () => {
-    const wrapper = mount(ProjectItem, {
-      props: { project: mockCuratedProject, rank: 2 },
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockCuratedProject },
     })
-    const badge = wrapper.find('.project-item__type--curated')
+    const badge = wrapper.find('.project-card__type--curated')
     expect(badge.exists()).toBe(true)
     expect(badge.text()).toBe('curated')
   })
 
   it('links to project detail page', () => {
-    const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 },
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockOwnProject },
     })
-    const link = wrapper.find('a.project-item')
+    const link = wrapper.find('a.project-card')
     expect(link.attributes('href')).toBe('#/project/test-project')
   })
 
   it('renders tags using TagBadge components', () => {
-    const wrapper = mount(ProjectItem, {
-      props: { project: mockOwnProject, rank: 1 },
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockOwnProject },
     })
-    const tags = wrapper.findAll('.project-item__tags .tag-badge')
+    const tags = wrapper.findAll('.project-card__tags .tag-badge')
     expect(tags.length).toBe(2)
   })
 
-  it('renders deployment badge for local deployment', () => {
-    const projectWithLocal = {
-      ...mockOwnProject,
-      deployment: { type: 'local', path: '/test', deployedAt: '2026-06-17', label: '测试工具' },
-    }
-    const wrapper = mount(ProjectItem, {
-      props: { project: projectWithLocal, rank: 1 },
+  it('does not render a rank number', () => {
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockOwnProject },
     })
-    const badge = wrapper.find('.project-item__deploy')
-    expect(badge.exists()).toBe(true)
-    expect(badge.text()).toContain('测试工具')
-    expect(badge.classes()).toContain('project-item__deploy--local')
-  })
-
-  it('renders deployment badge for iframe deployment', () => {
-    const projectWithIframe = {
-      ...mockOwnProject,
-      deployment: {
-        type: 'iframe',
-        url: 'https://example.com',
-        deployedAt: '2026-06-17',
-        label: '在线体验',
-      },
-    }
-    const wrapper = mount(ProjectItem, {
-      props: { project: projectWithIframe, rank: 1 },
-    })
-    const badge = wrapper.find('.project-item__deploy')
-    expect(badge.exists()).toBe(true)
-    expect(badge.text()).toContain('在线体验')
-    expect(badge.classes()).toContain('project-item__deploy--iframe')
+    expect(wrapper.text()).not.toContain('1.')
   })
 })

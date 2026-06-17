@@ -15,11 +15,10 @@
     <div class="list-view__count">{{ filteredProjects.length }} 个项目</div>
 
     <div v-if="filteredProjects.length > 0" class="list-view__items">
-      <ProjectItem
-        v-for="(project, index) in filteredProjects"
+      <ProjectCard
+        v-for="project in filteredProjects"
         :key="project.id"
         :project="project"
-        :rank="index + 1"
       />
     </div>
 
@@ -35,7 +34,7 @@ import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProjects } from '../composables/useProjects.js'
 import FilterBar from '../components/FilterBar.vue'
-import ProjectItem from '../components/ProjectItem.vue'
+import ProjectCard from '../components/ProjectCard.vue'
 
 const {
   filteredProjects,
@@ -94,7 +93,7 @@ watch(
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-primary);
-  color: var(--accent);
+  color: var(--accent-own);
   font-size: 0.85rem;
   cursor: pointer;
 }
