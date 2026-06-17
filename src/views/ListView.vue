@@ -145,6 +145,17 @@ watch(
   background: var(--bg-secondary);
 }
 
+/* ===== Responsive ===== */
+@media (max-width: 767px) {
+  .list-view__featured {
+    grid-template-columns: 1fr;
+  }
+
+  .list-view__items {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===== Scroll Reveal ===== */
 .reveal-item {
   opacity: 0;
