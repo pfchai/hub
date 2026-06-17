@@ -79,10 +79,11 @@ describe('ListView', () => {
     mockSearch.mockClear()
   })
 
-  it('renders a ProjectCard for each project in filteredProjects', () => {
+  it('renders all projects as featured cards or project cards', () => {
     const wrapper = mount(ListView)
-    const items = wrapper.findAll('.project-card')
-    expect(items.length).toBe(3)
+    const featuredCards = wrapper.findAll('.featured-card')
+    const projectCards = wrapper.findAll('.project-card')
+    expect(featuredCards.length + projectCards.length).toBe(3)
   })
 
   it('renders FilterBar', () => {
@@ -112,10 +113,10 @@ describe('ListView', () => {
     expect(wrapper.text()).toContain('没有找到匹配的项目')
   })
 
-  it('renders project count', () => {
+  it('renders section header with project count when there are non-featured projects', () => {
     const wrapper = mount(ListView)
-    expect(wrapper.find('.list-view__count').exists()).toBe(true)
-    expect(wrapper.find('.list-view__count').text()).toContain('3')
+    expect(wrapper.find('.list-view__section-header').exists()).toBe(true)
+    expect(wrapper.find('.list-view__section-header').text()).toContain('所有项目')
   })
 
   it('calls toggleTag with route tag param on mount', () => {
