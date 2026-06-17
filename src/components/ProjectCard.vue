@@ -43,6 +43,10 @@ defineProps({
   text-decoration: none;
 }
 
+.project-card:active {
+  transform: scale(0.98);
+}
+
 .project-card__title {
   font-size: 0.95rem;
   font-weight: 600;
