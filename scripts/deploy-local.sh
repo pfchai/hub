@@ -87,10 +87,31 @@ if [ ! -d "public/tldraw" ] || [ "$1" = "--force" ]; then
         done
     fi
 
-    # Step 4: Rewrite absolute URLs to relative in index.html
-    sed -i '' 's|https://www\.tldraw\.com/|/|g' \
+    # Step 4: Rewrite absolute paths to relative (tldraw served from /tldraw/ subdirectory)
+    sed -i '' 's|src="/assets/|src="assets/|g' \
       _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
-    sed -i 's|https://www\.tldraw\.com/|/|g' \
+    sed -i 's|src="/assets/|src="assets/|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
+    sed -i '' 's|href="/assets/|href="assets/|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
+    sed -i 's|href="/assets/|href="assets/|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
+    sed -i '' 's|src="/theme-init|src="theme-init|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
+    sed -i 's|src="/theme-init|src="theme-init|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
+    sed -i '' 's|href="/manifest|href="manifest|g; s|href="/favicon|href="favicon|g; s|href="/apple-touch-icon|href="apple-touch-icon|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
+    sed -i 's|href="/manifest|href="manifest|g; s|href="/favicon|href="favicon|g; s|href="/apple-touch-icon|href="apple-touch-icon|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
+    sed -i '' 's|src="/manifest|src="manifest|g; s|src="/favicon|src="favicon|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
+    sed -i 's|src="/manifest|src="manifest|g; s|src="/favicon|src="favicon|g' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
+    # Ensure html/body have height for #root to render
+    sed -i '' 's|#root {|html, body { height: 100%; margin: 0; } html { overflow: hidden; } #root {|' \
+      _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || \
+    sed -i 's|#root {|html, body { height: 100%; margin: 0; } html { overflow: hidden; } #root {|' \
       _deploy/tldraw-site/www.tldraw.com/index.html 2>/dev/null || true
 
     # Step 5: Copy to public
