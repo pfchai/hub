@@ -1,0 +1,14 @@
+# tldraw static SPA — serve files as-is (before SPA fallback)
+/tldraw         /tldraw/          301
+/tldraw/*       /tldraw/:splat    200
+
+# howtocook static site
+/how-to-cook    /how-to-cook/     301
+/how-to-cook/*  /how-to-cook/:splat 200
+
+# gift-book static site
+/gift-book      /gift-book/       301
+/gift-book/*    /gift-book/:splat 200
+
+# Hub SPA fallback — everything else
+/*              /index.html       200
