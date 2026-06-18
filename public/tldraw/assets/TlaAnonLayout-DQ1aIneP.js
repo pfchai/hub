@@ -1,5 +1,0 @@
-
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="fd344f13-cb60-52bf-8495-e44954d1c810")}catch(e){}}();
-import{Qn as e,Vi as t,er as n,ji as r}from"./index-ClHYEQFz.js";var i=t(r());function a(){(0,i.useEffect)(()=>{function t(t){t.isSpecialRedispatchedEvent||e(t)}return document.addEventListener(`dragover`,t),document.addEventListener(`drop`,t),()=>{document.removeEventListener(`dragover`,t),document.removeEventListener(`drop`,t)}},[])}var o={anonLayout:`_anonLayout_tysm9_1`,anonEditorWrapper:`_anonEditorWrapper_tysm9_9`},s=n();function c({children:e}){return a(),(0,s.jsx)(`div`,{className:o.anonLayout,children:(0,s.jsx)(`div`,{className:o.anonEditorWrapper,children:e})})}export{a as n,c as t};
-//# sourceMappingURL=TlaAnonLayout-DQ1aIneP.js.map
-//# debugId=fd344f13-cb60-52bf-8495-e44954d1c810

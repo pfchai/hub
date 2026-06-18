@@ -43,8 +43,8 @@
     "url": "https://github.com/tldraw/tldraw",
     "addedAt": "2026-02-18",
     "deployment": {
-      "type": "local",
-      "path": "/tldraw",
+      "type": "iframe",
+      "url": "https://www.tldraw.com",
       "deployedAt": "2026-06-18",
       "label": "在线白板"
     },

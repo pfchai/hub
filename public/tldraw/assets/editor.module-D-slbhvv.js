@@ -1,5 +1,0 @@
-
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="d7b1be55-f228-5a29-a6ce-c7598ba15428")}catch(e){}}();
-import{Jn as e,O as t,_i as n,gr as r}from"./index-ClHYEQFz.js";import{h as i,i as a,u as o}from"./useAppState-C01-APlR.js";var s=[t.configure({embedConfig:{google_maps:{apiKey:`AIzaSyARdpI0H2vlIHkJQP2eC6D-fJYIdDvG7cw`}}})];function c({error:e}){throw e}function l(){let t=a(),n=e();return r(`dark mode sync`,()=>{let e=o().theme===`dark`,t=n.user.getIsDarkMode();e&&!t?i(()=>({theme:`light`})):!e&&t&&i(()=>({theme:`dark`}))},[t,n]),null}function u(){let{fileSlug:e}=n();return e}var d={editor:`_editor_18bjm_1`,editorWrapper:`_editorWrapper_18bjm_10`,tldraw__editor:`_tldraw__editor_18bjm_18`,tldrawEditor:`_tldraw__editor_18bjm_18`,anonStylePanel:`_anonStylePanel_18bjm_30`};export{s as a,c as i,u as n,l as r,d as t};
-//# sourceMappingURL=editor.module-D-slbhvv.js.map
-//# debugId=d7b1be55-f228-5a29-a6ce-c7598ba15428
