@@ -8,6 +8,20 @@ FAILED=""
 
 echo "=== Building local projects ==="
 
+# === tldraw (static HTML, loads from CDN) ===
+if [ ! -f "public/tldraw/index.html" ] || [ "$1" = "--force" ]; then
+  echo "  Setting up tldraw..."
+  mkdir -p public/tldraw
+  if [ ! -f "public/tldraw/index.html" ]; then
+    echo "    ⚠️ tldraw index.html missing — will be created by deploy"
+    FAILED="$FAILED tldraw"
+  else
+    echo "    Done (static HTML, no build needed)"
+  fi
+else
+  echo "  tldraw: skip (already set up)"
+fi
+
 # === Gift Book ===
 if [ ! -d "public/gift-book" ] || [ "$1" = "--force" ]; then
   echo "  Building Gift Book..."

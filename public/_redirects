@@ -2,6 +2,10 @@
 /how-to-cook    /how-to-cook/     301
 /how-to-cook/*  /how-to-cook/:splat 200
 
+# tldraw static SPA (single HTML, no sub-routes)
+/tldraw          /tldraw/         301
+/tldraw/*        /tldraw/index.html 200
+
 # gift-book static site
 /gift-book      /gift-book/       301
 /gift-book/*    /gift-book/:splat 200

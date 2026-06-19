@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>tldraw — Whiteboard</title>
+<style>
+  html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #f9f9f9;
+  }
+  #loading {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: system-ui; font-size: 14px; color: #666;
+  }
+</style>
+</head>
+<body>
+<div id="root"><div id="loading">Loading tldraw...</div></div>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "@tldraw/tldraw": "https://esm.sh/@tldraw/tldraw@5.1.1"
+  }
+}
+</script>
+<script type="module">
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Tldraw } from "@tldraw/tldraw";
+
+try {
+  const el = document.getElementById("root");
+  createRoot(el).render(
+    React.createElement(Tldraw, {
+      persistenceKey: "hub-tldraw",
+      onMount: () => {
+        console.log("tldraw mounted successfully");
+      },
+    })
+  );
+} catch (err) {
+  document.getElementById("root").innerHTML =
+    '<div style="padding:40px;font-family:system-ui"><h2>Error</h2><pre>' +
+    err.message + "\n\n" + err.stack +
+    "</pre></div>";
+  console.error("tldraw mount error:", err);
+}
+</script>
+</body>
+</html>
