@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename)
 // Serve static sub-SPAs from public/ in local dev (Cloudflare Pages handles this via _redirects in prod)
 function staticSubSpas() {
   const PUBLIC_DIR = path.resolve(__dirname, 'public')
-  const SUB_SPAS = ['tldraw', 'how-to-cook', 'gift-book']
+  const SUB_SPAS = ['tldraw', 'how-to-cook', 'gift-book', 'learnGitBranching', 'impress.js', 'todomvc', 'editor-md']
 
   return {
     name: 'static-sub-spas',
@@ -79,8 +79,13 @@ function staticSubSpas() {
 
 export default defineConfig({
   plugins: [vue(), staticSubSpas()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
   test: {
     environment: 'jsdom',
-    include: ['src/__tests__/**/*.test.{js,ts}'],
+    include: ['src/**/__tests__/**/*.test.{js,ts}'],
   },
 })

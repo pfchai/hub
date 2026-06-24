@@ -1,6 +1,6 @@
 <template>
   <div class="project-card">
-    <a :href="`#/project/${project.id}`" class="project-card__main">
+    <a :href="`#/m/curation/project/${project.id}`" class="project-card__main">
       <div class="project-card__body">
         <span class="project-card__title">{{ project.title }}</span>
         <span class="project-card__tagline">{{ project.tagline }}</span>

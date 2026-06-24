@@ -1,0 +1,157 @@
+<template>
+  <div class="list-view">
+    <FilterBar
+      :active-type="activeType"
+      :sort-by="sortBy"
+      @update:type="filterByType"
+      @update:sort-by="setSort"
+    />
+
+    <div v-if="featuredProjects.length > 0" class="list-view__featured">
+      <FeaturedCard
+        v-for="project in featuredProjects"
+        :key="project.id"
+        :project="project"
+      />
+    </div>
+
+    <template v-if="remainingProjects.length > 0">
+      <div class="list-view__section-header">
+        <span>所有项目</span>
+        <div class="list-view__section-line"></div>
+        <span>{{ remainingProjects.length }}</span>
+      </div>
+
+      <div class="list-view__items">
+        <div
+          v-for="(project, index) in remainingProjects"
+          :key="project.id"
+          class="reveal-item"
+          :ref="(el) => register(el, index * 50)"
+        >
+          <ProjectCard :project="project" />
+        </div>
+      </div>
+    </template>
+
+    <div v-if="filteredProjects.length === 0" class="list-view__empty">
+      <p>没有找到匹配的项目。</p>
+      <button class="list-view__reset" @click="resetFilters">清除所有过滤条件</button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useProjectsRouting } from '../../composables/useProjectsRouting.js'
+import { useScrollReveal } from '../../composables/useScrollReveal.js'
+import FilterBar from '../../components/FilterBar.vue'
+import FeaturedCard from '../../components/FeaturedCard.vue'
+import ProjectCard from '../../components/ProjectCard.vue'
+
+const { register } = useScrollReveal()
+
+const {
+  filteredProjects,
+  activeType,
+  sortBy,
+  filterByType,
+  toggleTag,
+  search,
+  setSort,
+  resetFilters,
+} = useProjectsRouting()
+
+const featuredProjects = computed(() => {
+  const featured = filteredProjects.value.filter((p) => p.featured)
+  return featured.length > 0
+    ? featured.slice(0, 2)
+    : filteredProjects.value.slice(0, 2)
+})
+const remainingProjects = computed(() => {
+  const featuredIds = new Set(featuredProjects.value.map((p) => p.id))
+  return filteredProjects.value.filter((p) => !featuredIds.has(p.id))
+})
+</script>
+
+<style scoped>
+.list-view {
+  padding-top: 8px;
+}
+
+.list-view__featured {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.list-view__section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+}
+
+.list-view__section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.list-view__items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.list-view__empty {
+  text-align: center;
+  padding: 48px 0;
+  color: var(--text-muted);
+}
+
+.list-view__reset {
+  margin-top: 12px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  color: var(--accent-own);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.list-view__reset:hover {
+  background: var(--bg-secondary);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 767px) {
+  .list-view__featured {
+    grid-template-columns: 1fr;
+  }
+
+  .list-view__items {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Scroll Reveal ===== */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.reveal-item--visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+</style>

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import DetailView from '../views/DetailView.vue'
 
-vi.mock('../composables/useProjects.js', () => ({
-  useProjects: vi.fn(() => ({
+vi.mock('../composables/useProjectsState.js', () => ({
+  useProjectsState: vi.fn(() => ({
     getProject: vi.fn((id) => {
       if (id === 'my-project')
         return {
@@ -47,6 +47,13 @@ vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({ push: mockRouterPush, back: vi.fn() })),
 }))
 
+const baseMount = (component, opts = {}) =>
+  mount(component, {
+    global: { stubs: { 'router-link': true } },
+    ...opts,
+  })
+
+
 describe('DetailView', () => {
   beforeEach(() => {
     mockRouterPush.mockClear()
@@ -55,30 +62,30 @@ describe('DetailView', () => {
   it('renders OwnDetail for own-type projects', async () => {
     const { useRoute } = await import('vue-router')
     useRoute.mockReturnValue({ params: { id: 'my-project' } })
-    const wrapper = mount(DetailView)
+    const wrapper = baseMount(DetailView)
     expect(wrapper.text()).toContain('My Project')
   })
 
   it('renders CuratedDetail for curated-type projects', async () => {
     const { useRoute } = await import('vue-router')
     useRoute.mockReturnValue({ params: { id: 'curated' } })
-    const wrapper = mount(DetailView)
+    const wrapper = baseMount(DetailView)
     expect(wrapper.text()).toContain('Curated')
   })
 
   it('renders back-to-list link', async () => {
     const { useRoute } = await import('vue-router')
     useRoute.mockReturnValue({ params: { id: 'my-project' } })
-    const wrapper = mount(DetailView)
+    const wrapper = baseMount(DetailView)
     const backLink = wrapper.find('.detail__back')
     expect(backLink.exists()).toBe(true)
-    expect(backLink.attributes('href')).toBe('#/')
+    expect(backLink.attributes('href')).toBe('#/m/curation')
   })
 
   it('shows "not found" message for unknown project id', async () => {
     const { useRoute } = await import('vue-router')
     useRoute.mockReturnValue({ params: { id: 'nonexistent' } })
-    const wrapper = mount(DetailView)
+    const wrapper = baseMount(DetailView)
     expect(wrapper.text()).toContain('找不到')
   })
 })

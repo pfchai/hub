@@ -104,7 +104,7 @@ describe('FeaturedCard', () => {
       props: { project: mockOwnProject },
     })
     const link = wrapper.find('.featured-card__main')
-    expect(link.attributes('href')).toBe('#/project/test-project')
+    expect(link.attributes('href')).toBe('#/m/curation/project/test-project')
   })
 
   it('applies own gradient for own projects', () => {
