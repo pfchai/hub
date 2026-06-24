@@ -79,8 +79,13 @@ function staticSubSpas() {
 
 export default defineConfig({
   plugins: [vue(), staticSubSpas()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
   test: {
     environment: 'jsdom',
-    include: ['src/__tests__/**/*.test.{js,ts}'],
+    include: ['src/**/__tests__/**/*.test.{js,ts}'],
   },
 })

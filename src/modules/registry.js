@@ -28,19 +28,18 @@ export const modules = [
       { path: 'project/:id', label: '详情', component: () => import('./curation/DetailView.vue') },
     ],
   },
-  // ─── Future modules register here ────────────────────────────
-  // {
-  //   id: 'sunset',
-  //   title: '晚霞预测',
-  //   description: '预测今晚有没有好看的火烧云',
-  //   icon: '🌅',
-  //   color: '#e07b5a',
-  //   type: 'tool',
-  //   featured: true,
-  //   routes: [
-  //     { path: '', label: '预测', component: () => import('./sunset/SunsetView.vue') },
-  //   ],
-  // },
+  {
+    id: 'sunset',
+    title: '晚霞预测',
+    description: '预测今晚有没有好看的火烧云',
+    icon: '🌅',
+    color: '#e07b5a',
+    type: 'tool',
+    featured: true,
+    routes: [
+      { path: '', label: '预测', component: () => import('./sunset/SunsetView.vue') },
+    ],
+  },
 ]
 
 // ─── Dev-mode validation ────────────────────────────────────────
