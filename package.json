@@ -1,7 +1,7 @@
 {
   "name": "hub",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0.0",
   "description": "Personal curation website showcasing vibe-coding projects and handpicked GitHub open-source projects",
   "author": "pfchai",
   "license": "MIT",
