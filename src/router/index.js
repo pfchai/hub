@@ -67,14 +67,17 @@ const routes = [
   // ── Old route redirects (backward compat) ─────────────────────
   {
     path: '/project/:id',
+    name: 'project',
     redirect: (to) => ({ path: `/m/curation/project/${to.params.id}` }),
   },
   {
     path: '/tag/:tag',
+    name: 'tag',
     redirect: (to) => `/m/curation?tag=${to.params.tag}`,
   },
   {
     path: '/search',
+    name: 'search',
     redirect: (to) => `/m/curation?q=${to.query.q || ''}`,
   },
 

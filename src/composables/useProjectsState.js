@@ -33,7 +33,11 @@ export function useProjectsState() {
     }
 
     if (activeTags.value.size > 0) {
-      result = result.filter((p) => [...activeTags.value].every((tag) => p.tags.includes(tag)))
+      result = result.filter((p) =>
+        [...activeTags.value].every((tag) =>
+          p.tags.some((pt) => pt.toLowerCase() === tag.toLowerCase())
+        )
+      )
     }
 
     if (searchQuery.value.trim()) {
