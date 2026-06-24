@@ -2,11 +2,25 @@
   <header class="header">
     <div class="header__inner">
       <a href="#/" class="header__logo">Hub<span class="header__logo-dot">.</span></a>
+
       <nav class="header__nav">
         <a href="#/" class="header__link" :class="{ 'header__link--active': isHome }">Home</a>
+        <template v-for="group in navGroups" :key="group.type">
+          <a
+            v-for="mod in group.modules"
+            :key="mod.id"
+            :href="`#/m/${mod.id}`"
+            class="header__link"
+            :class="{ 'header__link--active': isModuleActive(mod.id) }"
+          >
+            {{ mod.icon }} {{ mod.title }}
+          </a>
+        </template>
         <a href="#/about" class="header__link" :class="{ 'header__link--active': isAbout }">About</a>
       </nav>
+
       <div class="header__spacer"></div>
+
       <div class="header__search" ref="searchRef">
         <button class="header__search-trigger" @click="toggleSearch" aria-label="Search">
           <svg class="header__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -32,6 +46,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { modules } from '../modules/registry.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -41,9 +56,24 @@ const searchValue = ref('')
 const searchInput = ref(null)
 const searchRef = ref(null)
 
+// ── Nav from registry ───────────────────────────────────────────
+const moduleTypes = ['curation', 'tool']
+
+const navGroups = computed(() =>
+  moduleTypes.map((type) => ({
+    type,
+    modules: modules.filter((m) => m.type === type),
+  })).filter((g) => g.modules.length > 0)
+)
+
 const isHome = computed(() => route.path === '/')
 const isAbout = computed(() => route.path === '/about')
 
+function isModuleActive(id) {
+  return route.path.startsWith(`/m/${id}`)
+}
+
+// ── Search ─────────────────────────────────────────────────────
 function toggleSearch() {
   searchOpen.value = !searchOpen.value
   if (searchOpen.value) {
@@ -143,6 +173,12 @@ onUnmounted(() => {
 .header__nav {
   display: flex;
   gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.header__nav::-webkit-scrollbar {
+  display: none;
 }
 
 .header__link {
@@ -155,6 +191,7 @@ onUnmounted(() => {
     color 150ms,
     background 150ms;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .header__link:hover {
