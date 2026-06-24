@@ -324,5 +324,81 @@
     "addedAt": "2026-06-16",
     "whyRecommend": "最好的项目灵感库。想学习某个网站的复现方式？来这里找。",
     "highlights": ["100+ 项目索引", "技术栈标注", "Demo 链接"]
+  },
+  {
+    "id": "learn-git-branching",
+    "type": "curated",
+    "title": "Learn Git Branching",
+    "tagline": "交互式 Git 可视化教程，通关学 Git",
+    "description": "通过游戏化的关卡设计，在浏览器中可视化地学习和练习 Git 操作。支持 Git 和 Mercurial，包含远程仓库模拟。",
+    "tags": ["JavaScript", "Git", "Education"],
+    "stars": 33627,
+    "url": "https://github.com/pcottle/learnGitBranching",
+    "addedAt": "2026-06-25",
+    "deployment": {
+      "type": "local",
+      "path": "/learnGitBranching",
+      "deployedAt": "2026-06-25",
+      "label": "Git 可视化教程"
+    },
+    "whyRecommend": "学习 Git 的最佳方式不是看文档，而是动手操作。可视化分支、提交、合并，理解 Git 的本质。",
+    "highlights": ["游戏化关卡设计", "可视化 commit 树", "远程仓库模拟"]
+  },
+  {
+    "id": "impress-js",
+    "type": "curated",
+    "title": "impress.js",
+    "tagline": "CSS3 3D 演示框架，颠覆传统 PPT",
+    "description": "基于 CSS3 Transform 和 Transition 的演示框架，在无限画布上创建炫目的 3D 演示文稿。颠覆了传统线性幻灯片的概念。",
+    "tags": ["JavaScript", "CSS3", "Presentation"],
+    "stars": 38187,
+    "url": "https://github.com/impress/impress.js",
+    "addedAt": "2026-06-25",
+    "deployment": {
+      "type": "local",
+      "path": "/impress.js",
+      "deployedAt": "2026-06-25",
+      "label": "3D 演示框架"
+    },
+    "whyRecommend": "prezi 的开源精神继承者。能用 CSS3 做出电影级演示效果，适合追求视觉冲击力的场合。",
+    "highlights": ["CSS3 3D 变换", "无限画布", "非线性演示"]
+  },
+  {
+    "id": "todomvc",
+    "type": "curated",
+    "title": "TodoMVC",
+    "tagline": "30+ 框架实现同一个 Todo App，帮你选框架",
+    "description": "用 React、Angular、Vue、Backbone 等 30+ 前端框架实现同一个 Todo 应用。帮助开发者对比和选择最适合的 JavaScript MV* 框架。",
+    "tags": ["JavaScript", "Frontend", "Learning"],
+    "stars": 28941,
+    "url": "https://github.com/tastejs/todomvc",
+    "addedAt": "2026-06-25",
+    "deployment": {
+      "type": "local",
+      "path": "/todomvc",
+      "deployedAt": "2026-06-25",
+      "label": "框架对比"
+    },
+    "whyRecommend": "前端框架的 Rosetta Stone。同样的功能，不同的实现，是理解框架差异的绝佳参考。",
+    "highlights": ["30+ 框架实现", "同一需求的多种解法", "框架选型参考"]
+  },
+  {
+    "id": "editor-md",
+    "type": "curated",
+    "title": "Editor.md",
+    "tagline": "开源可嵌入 Markdown 编辑器",
+    "description": "开源的、可嵌入的在线 Markdown 编辑器（组件），支持全屏编辑、实时预览、流程图、时序图、LaTeX 公式和 Emoji。",
+    "tags": ["JavaScript", "Markdown", "Editor"],
+    "stars": 14315,
+    "url": "https://github.com/pandao/editor.md",
+    "addedAt": "2026-06-25",
+    "deployment": {
+      "type": "local",
+      "path": "/editor-md",
+      "deployedAt": "2026-06-25",
+      "label": "Markdown 编辑器"
+    },
+    "whyRecommend": "经典的 Markdown 编辑器组件，功能齐全且易于集成。一站式满足文档编写需求。",
+    "highlights": ["实时预览", "流程图/时序图", "LaTeX 公式"]
   }
 ]
