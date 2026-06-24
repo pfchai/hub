@@ -1,7 +1,7 @@
 <template>
   <div class="featured-card">
     <a
-      :href="`#/project/${project.id}`"
+      :href="`#/m/curation/project/${project.id}`"
       class="featured-card__main"
     >
       <div

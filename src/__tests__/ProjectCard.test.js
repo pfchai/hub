@@ -74,7 +74,7 @@ describe('ProjectCard', () => {
       props: { project: mockOwnProject },
     })
     const link = wrapper.find('.project-card__main')
-    expect(link.attributes('href')).toBe('#/project/test-project')
+    expect(link.attributes('href')).toBe('#/m/curation/project/test-project')
   })
 
   it('renders tags using TagBadge components', () => {

@@ -10,7 +10,7 @@
     </div>
 
     <div class="detail__body">
-      <a href="#/" class="detail__back">← Back to projects</a>
+      <a href="#/m/curation" class="detail__back">← Back to projects</a>
 
       <a
         :href="project.url"

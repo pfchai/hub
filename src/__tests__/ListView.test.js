@@ -56,9 +56,6 @@ const mockProjects = [
   },
 ]
 
-const mockToggleTag = vi.fn()
-const mockSearch = vi.fn()
-
 const defaultMockReturn = {
   projects: ref(mockProjects),
   filteredProjects: ref(mockProjects),
@@ -68,14 +65,15 @@ const defaultMockReturn = {
   sortBy: ref('stars'),
   allTags: ref(['React', 'Vite', 'Vue']),
   filterByType: vi.fn(),
-  toggleTag: mockToggleTag,
-  search: mockSearch,
+  toggleTag: vi.fn(),
+  search: vi.fn(),
   setSort: vi.fn(),
   resetFilters: vi.fn(),
 }
 
-vi.mock('../composables/useProjects.js', () => ({
-  useProjects: vi.fn(() => defaultMockReturn),
+// Mock useProjectsRouting — the new composable used by the migrated ListView.
+vi.mock('../composables/useProjectsRouting.js', () => ({
+  useProjectsRouting: vi.fn(() => defaultMockReturn),
 }))
 
 const mockRoute = reactive({ params: {}, query: {} })
@@ -86,12 +84,10 @@ vi.mock('vue-router', () => ({
 
 describe('ListView', () => {
   beforeEach(async () => {
-    const { useProjects } = await import('../composables/useProjects.js')
-    useProjects.mockReturnValue(defaultMockReturn)
+    const { useProjectsRouting } = await import('../composables/useProjectsRouting.js')
+    useProjectsRouting.mockReturnValue(defaultMockReturn)
     mockRoute.params = {}
     mockRoute.query = {}
-    mockToggleTag.mockClear()
-    mockSearch.mockClear()
   })
 
   it('renders all projects as featured cards or project cards', () => {
@@ -107,9 +103,9 @@ describe('ListView', () => {
   })
 
   it('shows empty state when filteredProjects is empty', async () => {
-    const { useProjects } = await import('../composables/useProjects.js')
+    const { useProjectsRouting } = await import('../composables/useProjectsRouting.js')
     const emptyRef = ref([])
-    useProjects.mockReturnValue({
+    useProjectsRouting.mockReturnValue({
       projects: ref(mockProjects),
       filteredProjects: emptyRef,
       activeType: ref('all'),
@@ -118,8 +114,8 @@ describe('ListView', () => {
       sortBy: ref('stars'),
       allTags: ref(['React', 'Vite', 'Vue']),
       filterByType: vi.fn(),
-      toggleTag: mockToggleTag,
-      search: mockSearch,
+      toggleTag: vi.fn(),
+      search: vi.fn(),
       setSort: vi.fn(),
       resetFilters: vi.fn(),
     })
@@ -132,28 +128,5 @@ describe('ListView', () => {
     const wrapper = mount(ListView)
     expect(wrapper.find('.list-view__section-header').exists()).toBe(true)
     expect(wrapper.find('.list-view__section-header').text()).toContain('所有项目')
-  })
-
-  it('calls toggleTag with route tag param on mount', () => {
-    mockRoute.params = { tag: 'Vue' }
-    mount(ListView)
-    expect(mockToggleTag).toHaveBeenCalledWith('Vue')
-  })
-
-  it('calls search with route query param on mount', () => {
-    mockRoute.query = { q: 'react' }
-    mount(ListView)
-    expect(mockSearch).toHaveBeenCalledWith('react')
-  })
-
-  it('reacts when route tag param changes without remount', async () => {
-    mockRoute.params = { tag: 'Vue' }
-    const wrapper = mount(ListView)
-    expect(mockToggleTag).toHaveBeenCalledWith('Vue')
-
-    // Change route param without remounting
-    mockRoute.params = { tag: 'React' }
-    await wrapper.vm.$nextTick()
-    expect(mockToggleTag).toHaveBeenCalledWith('React')
   })
 })
