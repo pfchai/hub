@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor.md - 开源在线 Markdown 编辑器</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #1a1a2e;
+      --border: #e2e8f0;
+      --accent: #3b82f6;
+      --hover: #f1f5f9;
+      color-scheme: light dark;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0f172a; --text: #e2e8f0; --border: #1e293b; --accent: #60a5fa; --hover: #1e293b; }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; max-width: 900px; margin: 0 auto; line-height: 1.6; }
+    h1 { font-size: 28px; margin-bottom: 8px; }
+    .desc { color: #64748b; margin-bottom: 32px; font-size: 15px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .card { display: block; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-decoration: none; color: var(--text); transition: all .15s; }
+    .card:hover { background: var(--hover); border-color: var(--accent); }
+    .card h3 { font-size: 15px; margin-bottom: 4px; color: var(--accent); }
+    .card p { font-size: 13px; color: #64748b; }
+    .back { display: inline-block; margin-top: 32px; color: var(--accent); text-decoration: none; font-size: 14px; }
+    .back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>📝 Editor.md — 在线 Markdown 编辑器</h1>
+  <p class="desc">开源可嵌入的 Markdown 编辑器，支持全屏编辑、预览、HTML 转换、流程图等功能。以下为官方示例演示。</p>
+
+  <div class="grid" id="grid"></div>
+
+  <a href="/" class="back">← 返回 Hub</a>
+
+  <script>
+    const demos = [
+      { file: "full.html", title: "完整功能", desc: "全部特性展示：编辑、预览、工具栏" },
+      { file: "code-fold.html", title: "代码折叠", desc: "Markdown 代码块折叠功能" },
+      { file: "flowchart.html", title: "流程图", desc: "使用 flowchart.js 绘制流程图" },
+      { file: "emoji.html", title: "Emoji 支持", desc: "Markdown 中的 Emoji 表情" },
+      { file: "html-tags-decode.html", title: "HTML 标签", desc: "HTML 标签解析与渲染" },
+      { file: "change-mode.html", title: "模式切换", desc: "编辑/预览/全屏模式切换" },
+      { file: "custom-toolbar.html", title: "自定义工具栏", desc: "个性化编辑器工具栏" },
+      { file: "custom-keyboard-shortcuts.html", title: "快捷键", desc: "自定义键盘快捷键" },
+      { file: "define-plugin.html", title: "插件定义", desc: "创建自定义编辑器插件" },
+      { file: "dynamic-create-editormd.html", title: "动态创建", desc: "JS 动态创建编辑器实例" },
+      { file: "form-get-value.html", title: "表单取值", desc: "获取编辑器 Markdown 内容" },
+      { file: "goto-line.html", title: "跳转到行", desc: "代码跳转到指定行" },
+      { file: "html-preview-markdown-to-html.html", title: "Markdown→HTML", desc: "Markdown 转 HTML 预览" },
+      { file: "external-use.html", title: "外部使用", desc: "在对话框中使用编辑器" },
+      { file: "auto-height.html", title: "自动高度", desc: "编辑器自适应内容高度" },
+      { file: "extends.html", title: "扩展功能", desc: "第三方扩展集成" },
+      { file: "delay-renderer-preview.html", title: "延迟渲染", desc: "延迟加载预览性能优化" },
+    ];
+    const grid = document.getElementById('grid');
+    demos.forEach(d => {
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = 'examples/' + d.file;
+      a.innerHTML = `<h3>${d.title}</h3><p>${d.desc}</p>`;
+      grid.appendChild(a);
+    });
+  </script>
+</body>
+</html>

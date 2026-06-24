@@ -8,6 +8,11 @@ public/how-to-cook/
 public/excalidraw/
 public/slidev/
 public/gift-book/
+public/impress.js/
+public/learnGitBranching/
+public/todomvc/
+public/editor-md/*
+!public/editor-md/index.html
 .claude/
 .DS_Store
 *.log
