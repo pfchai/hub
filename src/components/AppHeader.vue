@@ -1,9 +1,9 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <a href="#/" class="header__logo">Hub<span class="header__logo-dot">.</span></a>
+      <a href="#/" class="header__logo" aria-label="Home">Hub<span class="header__logo-dot">.</span></a>
 
-      <nav class="header__nav">
+      <nav class="header__nav" aria-label="Main navigation">
         <a href="#/" class="header__link" :class="{ 'header__link--active': isHome }">Home</a>
         <template v-for="group in navGroups" :key="group.type">
           <a
@@ -300,5 +300,18 @@ onUnmounted(() => {
 
 .header__search-input::placeholder {
   color: var(--text-subtle);
+}
+
+/* ===== Touch targets (mobile) ===== */
+@media (max-width: 639px) {
+  .header__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .header__search-trigger {
+    min-height: 44px;
+  }
 }
 </style>

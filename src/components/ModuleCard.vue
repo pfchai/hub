@@ -2,6 +2,7 @@
   <a
     :href="`#/m/${module.id}`"
     class="module-card"
+    role="article"
     :style="{ '--module-color': module.color, '--module-color-dim': moduleDimColor }"
   >
     <div class="module-card__accent"></div>
