@@ -20,7 +20,7 @@ export const modules = [
     title: '项目策展',
     description: '我做的和收藏的开源项目',
     icon: '📋',
-    color: '#2563eb',
+    color: '#3b82f6',
     type: 'curation',
     featured: true,
     routes: [
@@ -86,7 +86,7 @@ export function validateRegistry(mods) {
 
     // — color format
     if (!/^#[0-9a-fA-F]{6}$/.test(m.color)) {
-      console.warn(`[registry] Module "${m.id}" color "${m.color}" should be a 6-char hex, e.g. "#2563eb"`)
+      console.warn(`[registry] Module "${m.id}" color "${m.color}" should be a 6-char hex, e.g. "#3b82f6"`)
     }
 
     // — routes

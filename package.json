@@ -25,7 +25,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format": "prettier --write 'src/**/*.{js,vue,css}'"
+    "format": "prettier --write 'src/**/*.{js,vue,css}'",
+    "check:contrast": "node scripts/check-contrast.js"
   },
   "dependencies": {
     "marked": "^15.0.0",

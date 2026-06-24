@@ -33,7 +33,7 @@
  * @property {string} title - Display name in nav bars and cards.
  * @property {string} description - One-liner, shown on ModuleCard.
  * @property {string} icon - Emoji string, e.g. `"📋"`, `"🌅"`
- * @property {string} color - CSS hex, e.g. `"#2563eb"`. Used as card accent.
+ * @property {string} color - CSS hex, e.g. `"#3b82f6"`. Used as card accent.
  * @property {ModuleType} type - 'curation' | 'tool'
  * @property {boolean} featured - `true` → card appears on dashboard home.
  *   `false` → accessible only via AppHeader nav.
