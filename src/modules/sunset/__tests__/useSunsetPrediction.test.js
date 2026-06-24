@@ -7,12 +7,10 @@ import { useSunsetPrediction } from '../useSunsetPrediction.js'
 
 // Mock SunCalc
 vi.mock('suncalc', () => ({
-  default: {
-    getTimes: vi.fn(() => ({
-      sunset: new Date('2024-06-25T19:12:00+08:00'),
-      goldenHour: new Date('2024-06-25T18:38:00+08:00'),
-    })),
-  },
+  getTimes: vi.fn(() => ({
+    sunset: new Date('2024-06-25T19:12:00+08:00'),
+    goldenHour: new Date('2024-06-25T18:38:00+08:00'),
+  })),
 }))
 
 describe('useSunsetPrediction', () => {

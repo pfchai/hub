@@ -14,7 +14,7 @@
  */
 
 import { ref, watch } from 'vue'
-import SunCalc from 'suncalc'
+import * as SunCalc from 'suncalc'
 
 /**
  * @param {import('vue').Ref<{latitude: number, longitude: number} | null>} coordsRef
