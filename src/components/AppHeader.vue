@@ -19,6 +19,20 @@
         <a href="#/about" class="header__link" :class="{ 'header__link--active': isAbout }">About</a>
       </nav>
 
+      <!-- Hamburger toggle (mobile only) -->
+      <button
+        class="header__hamburger"
+        :class="{ 'header__hamburger--open': mobileMenuOpen }"
+        @click="toggleMobileMenu"
+        @keydown.escape.stop="closeMobileMenu"
+        aria-label="Toggle navigation menu"
+        :aria-expanded="mobileMenuOpen"
+      >
+        <span class="header__hamburger-bar"></span>
+        <span class="header__hamburger-bar"></span>
+        <span class="header__hamburger-bar"></span>
+      </button>
+
       <div class="header__spacer"></div>
 
       <div class="header__search" ref="searchRef">
@@ -40,6 +54,46 @@
         </div>
       </div>
     </div>
+
+    <!-- Mobile menu -->
+    <transition name="mobile-menu">
+      <div
+        v-if="mobileMenuOpen"
+        class="header__mobile-backdrop"
+        @click="closeMobileMenu"
+        @keydown.escape="closeMobileMenu"
+      ></div>
+    </transition>
+    <div
+      class="header__mobile-menu"
+      :class="{ 'header__mobile-menu--open': mobileMenuOpen }"
+      ref="mobileMenuRef"
+    >
+      <nav class="header__mobile-nav" aria-label="Mobile navigation">
+        <a
+          href="#/"
+          class="header__link"
+          :class="{ 'header__link--active': isHome }"
+          @click="closeMobileMenu"
+        >Home</a>
+        <template v-for="group in navGroups" :key="group.type">
+          <a
+            v-for="mod in group.modules"
+            :key="mod.id"
+            :href="`#/m/${mod.id}`"
+            class="header__link"
+            :class="{ 'header__link--active': isModuleActive(mod.id) }"
+            @click="closeMobileMenu"
+          >{{ mod.icon }} {{ mod.title }}</a>
+        </template>
+        <a
+          href="#/about"
+          class="header__link"
+          :class="{ 'header__link--active': isAbout }"
+          @click="closeMobileMenu"
+        >About</a>
+      </nav>
+    </div>
   </header>
 </template>
 
@@ -55,6 +109,32 @@ const searchOpen = ref(false)
 const searchValue = ref('')
 const searchInput = ref(null)
 const searchRef = ref(null)
+
+// ── Mobile menu ──────────────────────────────────────────────
+const mobileMenuOpen = ref(false)
+const mobileMenuRef = ref(null)
+
+function toggleMobileMenu() {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
+
+function closeMobileMenu() {
+  mobileMenuOpen.value = false
+}
+
+// Close mobile menu on Escape key
+function handleMobileEscape(e) {
+  if (e.key === 'Escape' && mobileMenuOpen.value) {
+    closeMobileMenu()
+  }
+}
+
+// Close mobile menu on route change (hash change)
+function handleHashChange() {
+  if (mobileMenuOpen.value) {
+    closeMobileMenu()
+  }
+}
 
 // ── Nav from registry ───────────────────────────────────────────
 const moduleTypes = ['curation', 'tool']
@@ -122,10 +202,14 @@ function handleKeydown(e) {
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('keydown', handleMobileEscape)
+  window.addEventListener('hashchange', handleHashChange)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('keydown', handleMobileEscape)
+  window.removeEventListener('hashchange', handleHashChange)
 })
 </script>
 
@@ -312,6 +396,123 @@ onUnmounted(() => {
 
   .header__search-trigger {
     min-height: 44px;
+  }
+}
+
+/* ===== Hamburger button (hidden on desktop) ===== */
+.header__hamburger {
+  display: none;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 8px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 6px;
+  transition: background 150ms;
+  margin-left: auto;
+}
+
+.header__hamburger:hover {
+  background: var(--bg-secondary);
+}
+
+.header__hamburger-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-muted);
+  border-radius: 2px;
+  transition: transform 200ms, opacity 200ms;
+}
+
+.header__hamburger--open .header__hamburger-bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.header__hamburger--open .header__hamburger-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.header__hamburger--open .header__hamburger-bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (max-width: 639px) {
+  .header__hamburger {
+    display: flex;
+  }
+}
+
+/* ===== Mobile menu ===== */
+.header__mobile-backdrop {
+  display: none;
+}
+
+.header__mobile-menu {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .header__nav {
+    display: none;
+  }
+
+  .header__hamburger {
+    display: flex;
+  }
+
+  .header__mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: 52px;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 90;
+  }
+
+  .header__mobile-menu {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms ease;
+    z-index: 91;
+  }
+
+  .header__mobile-menu--open {
+    max-height: 500px;
+  }
+
+  .header__mobile-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px 12px;
+    gap: 2px;
+  }
+
+  .header__mobile-nav .header__link {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Dark mode backdrop */
+  @media (prefers-color-scheme: dark) {
+    .header__mobile-backdrop {
+      background: rgba(0, 0, 0, 0.5);
+    }
   }
 }
 </style>

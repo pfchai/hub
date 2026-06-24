@@ -81,6 +81,13 @@ const routes = [
     redirect: (to) => `/m/curation?q=${to.query.q || ''}`,
   },
 
+  // ── About page ──────────────────────────────────────────────
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/AboutView.vue'),
+  },
+
   // ── Catch-all 404 ─────────────────────────────────────────────
   {
     path: '/:pathMatch(.*)*',
