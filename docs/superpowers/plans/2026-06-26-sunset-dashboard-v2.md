@@ -1,3 +1,423 @@
+# Sunset Dashboard v2 Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Upgrade sunset prediction page from a simple text card to a data-dashboard visual experience with sun arc SVG, donut charts, composite score, and countdown timer.
+
+**Architecture:** Extend `useSunsetPrediction.js` with per-metric quality ratings and composite score. Rewrite `SunsetView.vue` template with SVG arc, SVG ring donut charts, score bar, and real-time countdown using `setInterval`. All visuals are pure CSS + inline SVG — zero new dependencies.
+
+**Tech Stack:** Vue 3 (Composition API), SunCalc, Vitest. No new npm deps. No new API calls.
+
+## Global Constraints
+
+- Pure CSS + SVG + Vue 3 + SunCalc. No new npm deps. No new API calls.
+- All existing states preserved: loading skeleton, geo-denied manual input, degraded weather-fail view, success dashboard.
+- Dark mode via `prefers-color-scheme: dark`. SVG uses `currentColor` or explicit dark color values.
+- `prefers-reduced-motion: reduce` disables animations globally (already in global.css).
+- Max content width 480px (existing `.sunset-view` constraint).
+- WCAG AA contrast maintained (≥4.5:1 for body text). Module color `#e07b5a` already verified.
+- Ring color ranges per spec:
+  - High cloud good: 30-70%, maybe: 10-30%, poor: <10% or >70%
+  - Low cloud good: <30%, maybe: 30-70%, poor: >70%
+  - Humidity good: 40-80%, maybe: 30-40% or >80%, poor: <30%
+- Composite score algorithm per spec (high cloud max 40pts, low cloud max 30pts, humidity max 30pts).
+
+---
+
+### Task 1: Extend useSunsetPrediction with per-metric quality + composite score
+
+**Files:**
+- Modify: `src/modules/sunset/useSunsetPrediction.js`
+
+**Interfaces:**
+- Consumes: (coordsRef, weatherDataRef) — existing
+- Produces:
+  - Existing: `sunsetTime`, `goldenHourStart`, `goldenHourEnd`, `prediction`, `quality`, `details`
+  - New: `highCloudQuality` (Ref<'good'|'maybe'|'poor'|null>), `lowCloudQuality` (Ref<'good'|'maybe'|'poor'|null>), `humidityQuality` (Ref<'good'|'maybe'|'poor'|null>)
+  - New: `compositeScore` (Ref<number>) — integer 0–100
+  - New: `highCloudPct` (Ref<number>), `lowCloudPct` (Ref<number>), `humidityPct` (Ref<number>)
+
+- [ ] **Step 1: Add new refs and per-metric quality helper**
+
+Add to the top of `useSunsetPrediction()` body, after existing ref declarations:
+
+```js
+/** @type {import('vue').Ref<'good' | 'maybe' | 'poor' | null>} */
+const highCloudQuality = ref(null)
+/** @type {import('vue').Ref<'good' | 'maybe' | 'poor' | null>} */
+const lowCloudQuality = ref(null)
+/** @type {import('vue').Ref<'good' | 'maybe' | 'poor' | null>} */
+const humidityQuality = ref(null)
+/** @type {import('vue').Ref<number>} */
+const compositeScore = ref(0)
+/** @type {import('vue').Ref<number>} */
+const highCloudPct = ref(0)
+/** @type {import('vue').Ref<number>} */
+const lowCloudPct = ref(0)
+/** @type {import('vue').Ref<number>} */
+const humidityPct = ref(0)
+
+/**
+ * Rate a single metric against good/maybe/poor thresholds.
+ * @param {number} value — percent 0–100
+ * @param {'highCloud' | 'lowCloud' | 'humidity'} metric
+ * @returns {'good' | 'maybe' | 'poor'}
+ */
+function rateMetric(value, metric) {
+  if (metric === 'highCloud') {
+    if (value >= 30 && value <= 70) return 'good'
+    if (value > 10 && value < 30) return 'maybe'
+    return 'poor'
+  }
+  if (metric === 'lowCloud') {
+    if (value < 30) return 'good'
+    if (value >= 30 && value <= 70) return 'maybe'
+    return 'poor'
+  }
+  // humidity
+  if (value >= 40 && value <= 80) return 'good'
+  if ((value >= 30 && value < 40) || value > 80) return 'maybe'
+  return 'poor'
+}
+```
+
+- [ ] **Step 2: Add composite score helper**
+
+```js
+/**
+ * Compute composite score 0–100 from three metrics.
+ * @param {number} highCloud
+ * @param {number} lowCloud
+ * @param {number} humidity
+ * @returns {number} integer 0–100
+ */
+function computeScore(highCloud, lowCloud, humidity) {
+  let score = 0
+  // High cloud (max 40)
+  if (highCloud >= 30 && highCloud <= 70) score += 40
+  else if (highCloud >= 10 && highCloud <= 30) score += 20
+  // Low cloud (max 30)
+  if (lowCloud < 30) score += 30
+  else if (lowCloud >= 30 && lowCloud <= 70) score += 15
+  // Humidity (max 30)
+  if (humidity >= 40 && humidity <= 80) score += 30
+  else if ((humidity >= 30 && humidity < 40) || humidity > 80) score += 15
+  return score
+}
+```
+
+- [ ] **Step 3: Update weatherData watcher to compute new outputs**
+
+Replace the existing weatherData watcher body (from `const { cloud_cover_high...` through the if/else chain) with:
+
+```js
+watch(
+  weatherDataRef,
+  (data) => {
+    if (!data || !data.current) {
+      prediction.value = null
+      quality.value = null
+      details.value = null
+      highCloudQuality.value = null
+      lowCloudQuality.value = null
+      humidityQuality.value = null
+      compositeScore.value = 0
+      highCloudPct.value = 0
+      lowCloudPct.value = 0
+      humidityPct.value = 0
+      return
+    }
+
+    const { cloud_cover_high, cloud_cover_low, relative_humidity_2m } = data.current
+    const highCloud = cloud_cover_high ?? 0
+    const lowCloud = cloud_cover_low ?? 0
+    const humidity = relative_humidity_2m ?? 0
+
+    // Expose raw percentages
+    highCloudPct.value = highCloud
+    lowCloudPct.value = lowCloud
+    humidityPct.value = humidity
+
+    // Per-metric quality
+    highCloudQuality.value = rateMetric(highCloud, 'highCloud')
+    lowCloudQuality.value = rateMetric(lowCloud, 'lowCloud')
+    humidityQuality.value = rateMetric(humidity, 'humidity')
+
+    // Composite score
+    compositeScore.value = computeScore(highCloud, lowCloud, humidity)
+
+    // Overall verdict (unchanged logic)
+    if (highCloud > 30 && humidity >= 40 && humidity <= 80 && lowCloud < 70) {
+      quality.value = 'good'
+      prediction.value = '值得一看'
+      details.value = '高云覆盖和适宜湿度，晚霞色彩会很丰富。'
+    } else if (highCloud > 10 && humidity >= 30) {
+      quality.value = 'maybe'
+      prediction.value = '可以留意'
+      details.value = '有一定云量，但条件可能不是最理想。'
+    } else {
+      quality.value = 'unlikely'
+      prediction.value = '概率较低'
+      details.value = '天空太干净或湿度不合适，晚霞可能不明显。'
+    }
+  },
+  { immediate: true }
+)
+```
+
+- [ ] **Step 4: Update return statement**
+
+```js
+return {
+  sunsetTime, goldenHourStart, goldenHourEnd,
+  prediction, quality, details,
+  highCloudQuality, lowCloudQuality, humidityQuality,
+  compositeScore,
+  highCloudPct, lowCloudPct, humidityPct,
+}
+```
+
+- [ ] **Step 5: Update JSDoc return type**
+
+Replace the `@returns` block with:
+
+```js
+/**
+ * @returns {{
+ *   sunsetTime: import('vue').Ref<Date | null>,
+ *   goldenHourStart: import('vue').Ref<Date | null>,
+ *   goldenHourEnd: import('vue').Ref<Date | null>,
+ *   prediction: import('vue').Ref<string | null>,
+ *   quality: import('vue').Ref<'good' | 'maybe' | 'unlikely' | null>,
+ *   details: import('vue').Ref<string | null>,
+ *   highCloudQuality: import('vue').Ref<'good' | 'maybe' | 'poor' | null>,
+ *   lowCloudQuality: import('vue').Ref<'good' | 'maybe' | 'poor' | null>,
+ *   humidityQuality: import('vue').Ref<'good' | 'maybe' | 'poor' | null>,
+ *   compositeScore: import('vue').Ref<number>,
+ *   highCloudPct: import('vue').Ref<number>,
+ *   lowCloudPct: import('vue').Ref<number>,
+ *   humidityPct: import('vue').Ref<number>
+ * }}
+ */
+```
+
+- [ ] **Step 6: Run existing tests to confirm no regressions**
+
+Run: `npx vitest run src/modules/sunset/__tests__/useSunsetPrediction.test.js`
+Expected: All 11 existing tests PASS.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add src/modules/sunset/useSunsetPrediction.js
+git commit -m "feat(sunset): add per-metric quality ratings and composite score"
+```
+
+---
+
+### Task 2: Update useSunsetPrediction tests for new outputs
+
+**Files:**
+- Modify: `src/modules/sunset/__tests__/useSunsetPrediction.test.js`
+
+**Interfaces:**
+- Consumes: `useSunsetPrediction(coordsRef, weatherRef)` — same signature
+- Produces: Tests for `highCloudQuality`, `lowCloudQuality`, `humidityQuality`, `compositeScore`, `highCloudPct`, `lowCloudPct`, `humidityPct`
+
+- [ ] **Step 1: Add test for per-metric quality ratings (good conditions)**
+
+Insert after the existing "returns good for optimal conditions" test, inside the `describe('prediction quality', ...)` block:
+
+```js
+it('exposes per-metric quality ratings for good conditions', async () => {
+  const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+  const weatherRef = ref({
+    current: {
+      cloud_cover_high: 50,
+      cloud_cover_low: 20,
+      relative_humidity_2m: 60,
+    },
+  })
+
+  const { highCloudQuality, lowCloudQuality, humidityQuality } = useSunsetPrediction(coordsRef, weatherRef)
+
+  await vi.waitFor(() => {
+    expect(highCloudQuality.value).toBe('good')
+  })
+  expect(lowCloudQuality.value).toBe('good')
+  expect(humidityQuality.value).toBe('good')
+})
+```
+
+- [ ] **Step 2: Add test for per-metric quality (maybe conditions)**
+
+```js
+it('exposes per-metric quality ratings for maybe conditions', async () => {
+  const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+  const weatherRef = ref({
+    current: {
+      cloud_cover_high: 20,
+      cloud_cover_low: 50,
+      relative_humidity_2m: 35,
+    },
+  })
+
+  const { highCloudQuality, lowCloudQuality, humidityQuality } = useSunsetPrediction(coordsRef, weatherRef)
+
+  await vi.waitFor(() => {
+    expect(highCloudQuality.value).toBe('maybe')
+  })
+  expect(lowCloudQuality.value).toBe('maybe')
+  expect(humidityQuality.value).toBe('maybe')
+})
+```
+
+- [ ] **Step 3: Add test for per-metric quality (poor conditions)**
+
+```js
+it('exposes per-metric quality ratings for poor conditions', async () => {
+  const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+  const weatherRef = ref({
+    current: {
+      cloud_cover_high: 5,
+      cloud_cover_low: 80,
+      relative_humidity_2m: 20,
+    },
+  })
+
+  const { highCloudQuality, lowCloudQuality, humidityQuality } = useSunsetPrediction(coordsRef, weatherRef)
+
+  await vi.waitFor(() => {
+    expect(highCloudQuality.value).toBe('poor')
+  })
+  expect(lowCloudQuality.value).toBe('poor')
+  expect(humidityQuality.value).toBe('poor')
+})
+```
+
+- [ ] **Step 4: Add test for composite score**
+
+```js
+describe('composite score', () => {
+  it('returns 100 for perfect conditions', async () => {
+    const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+    const weatherRef = ref({
+      current: {
+        cloud_cover_high: 50,
+        cloud_cover_low: 20,
+        relative_humidity_2m: 60,
+      },
+    })
+
+    const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+    await vi.waitFor(() => {
+      expect(compositeScore.value).toBe(100)
+    })
+  })
+
+  it('returns 0 for worst conditions', async () => {
+    const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+    const weatherRef = ref({
+      current: {
+        cloud_cover_high: 5,
+        cloud_cover_low: 80,
+        relative_humidity_2m: 20,
+      },
+    })
+
+    const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+    await vi.waitFor(() => {
+      expect(compositeScore.value).toBe(0)
+    })
+  })
+
+  it('returns intermediate scores for mixed conditions', async () => {
+    const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+    const weatherRef = ref({
+      current: {
+        cloud_cover_high: 50,  // good → 40
+        cloud_cover_low: 50,   // maybe → 15
+        relative_humidity_2m: 35, // maybe → 15
+      },
+    })
+
+    const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+    await vi.waitFor(() => {
+      expect(compositeScore.value).toBe(70)
+    })
+  })
+
+  it('returns 0 when weather data is missing', () => {
+    const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+    const weatherRef = ref(null)
+    const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+    expect(compositeScore.value).toBe(0)
+  })
+})
+```
+
+- [ ] **Step 5: Add test for exposed percentage refs**
+
+```js
+it('exposes raw percentage values', async () => {
+  const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+  const weatherRef = ref({
+    current: {
+      cloud_cover_high: 45,
+      cloud_cover_low: 22,
+      relative_humidity_2m: 65,
+    },
+  })
+
+  const { highCloudPct, lowCloudPct, humidityPct } = useSunsetPrediction(coordsRef, weatherRef)
+
+  await vi.waitFor(() => {
+    expect(highCloudPct.value).toBe(45)
+  })
+  expect(lowCloudPct.value).toBe(22)
+  expect(humidityPct.value).toBe(65)
+})
+```
+
+- [ ] **Step 6: Run tests**
+
+Run: `npx vitest run src/modules/sunset/__tests__/useSunsetPrediction.test.js`
+Expected: All 16 tests PASS (11 existing + 5 new).
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add src/modules/sunset/__tests__/useSunsetPrediction.test.js
+git commit -m "test(sunset): add tests for per-metric quality and composite score"
+```
+
+---
+
+### Task 3: Rewrite SunsetView.vue template + script
+
+**Files:**
+- Modify: `src/modules/sunset/SunsetView.vue` (template + script sections only)
+
+**Interfaces:**
+- Consumes:
+  - `useGeolocation()` — `{ coords, error: geoError, isLoading: geoLoading, retry: retryGeolocation }`
+  - `useWeather(effectiveCoords)` — `{ data: weatherData, error: weatherError, isLoading: weatherLoading }`
+  - `useSunsetPrediction(effectiveCoords, weatherData)` — all existing + new refs from Task 1
+- Produces: Full dashboard UI template + countdown timer logic
+
+- [ ] **Step 1: Read current SunsetView.vue to get the complete file**
+
+Run: `cat src/modules/sunset/SunsetView.vue` to verify current state (we know it from earlier reads).
+
+- [ ] **Step 2: Replace the template section**
+
+Replace lines 1–125 (entire `<template>`) with:
+
+```html
 <template>
   <div class="sunset-view">
     <h1 class="sunset-title">晚霞预测</h1>
@@ -189,7 +609,13 @@
     </template>
   </div>
 </template>
+```
 
+- [ ] **Step 3: Replace the script section**
+
+Replace lines 128–202 (entire `<script setup>`) with:
+
+```js
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useGeolocation } from './useGeolocation.js'
@@ -362,14 +788,15 @@ onUnmounted(() => {
 const DONUT_CIRCUM = 2 * Math.PI * 32
 
 function donutDash(pct) {
-  const p = Math.min(100, Math.max(0, pct ?? 0))
+  const p = Math.min(100, Math.max(0, pct))
   const fill = (p / 100) * DONUT_CIRCUM
   return `${fill} ${DONUT_CIRCUM - fill}`
 }
 
-function donutColor(quality) {
-  if (quality === 'good') return '#16a34a'
-  if (quality === 'maybe') return '#ca8a04'
+function donutColor(qualityRef) {
+  const q = qualityRef?.value ?? null
+  if (q === 'good') return '#16a34a'
+  if (q === 'maybe') return '#ca8a04'
   return 'var(--text-muted)'
 }
 
@@ -384,7 +811,41 @@ function formatDate(date) {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric', weekday: 'short' })
 }
 </script>
+```
 
+- [ ] **Step 4: Verify template/script integrity**
+
+Run: `npx vite build --mode production 2>&1 | tail -5`
+Expected: Build succeeds without errors.
+
+- [ ] **Step 5: Run existing tests to catch regressions**
+
+Run: `npx vitest run`
+Expected: All previously passing tests still pass.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/modules/sunset/SunsetView.vue
+git commit -m "feat(sunset): dashboard v2 template + script with sun arc, donuts, score, countdown"
+```
+
+---
+
+### Task 4: Rewrite SunsetView.vue styles
+
+**Files:**
+- Modify: `src/modules/sunset/SunsetView.vue` (style section only)
+
+**Interfaces:**
+- Consumes: CSS classes from Task 3 template
+- Produces: Complete visual styling for dashboard, arc, donuts, score bar, dark mode, reduced motion
+
+- [ ] **Step 1: Replace the entire `<style scoped>` block (lines 204-555)**
+
+Replace with:
+
+```css
 <style scoped>
 .sunset-view {
   max-width: 480px;
@@ -834,3 +1295,26 @@ function formatDate(date) {
   .pulse { animation: none; }
 }
 </style>
+```
+
+- [ ] **Step 2: Verify build**
+
+Run: `npx vite build --mode production 2>&1 | tail -8`
+Expected: Build succeeds, no CSS warnings.
+
+- [ ] **Step 3: Verify contrast compliance**
+
+Run: `node scripts/check-contrast.js`
+Expected: All module colors pass ≥4.5:1.
+
+- [ ] **Step 4: Run full test suite**
+
+Run: `npx vitest run`
+Expected: All tests pass.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/modules/sunset/SunsetView.vue
+git commit -m "style(sunset): dashboard v2 visual styles — arc, donuts, score bar, gradients"
+```
