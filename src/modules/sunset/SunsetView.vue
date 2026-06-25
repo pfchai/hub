@@ -134,13 +134,12 @@ import { useSunsetPrediction } from './useSunsetPrediction.js'
 // ── Geolocation ─────────────────────────────────────────────────
 const { coords, error: geoError, isLoading: geoLoading, retry: retryGeolocation } = useGeolocation()
 
-// ── Pre-fill and auto-submit when geolocation succeeds ──────────
+// ── Pre-fill input fields when geolocation succeeds ──────────────
 watch(coords, (newCoords) => {
   if (newCoords) {
     manualLat.value = newCoords.latitude
     manualLng.value = newCoords.longitude
-    // Auto-use the geolocation result so the prediction loads immediately
-    manualCoords.value = { latitude: newCoords.latitude, longitude: newCoords.longitude }
+    // Pre-fill only — user clicks "查询" to submit
   }
 }, { immediate: true })
 
