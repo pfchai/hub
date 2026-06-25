@@ -18,9 +18,10 @@
       </div>
     </div>
 
-    <!-- ── Geolocation denied — manual input fallback ────────── -->
-    <div v-else-if="geoError && !coords" class="manual-input-card">
-      <p class="manual-hint">{{ geoError }}</p>
+    <!-- ── Manual input card (geo denied or not yet resolved) ── -->
+    <div v-else-if="!effectiveCoords" class="manual-input-card">
+      <p v-if="geoError" class="manual-hint">{{ geoError }}</p>
+      <p v-else class="manual-hint">请输入你的坐标来查看晚霞预测</p>
       <div class="input-group">
         <label class="input-label" for="manual-lat">纬度</label>
         <input
@@ -46,13 +47,13 @@
       <button class="submit-btn" :disabled="!manualLat || !manualLng" @click="submitManualCoords">
         查询
       </button>
-      <button class="retry-link" @click="retryGeolocation">
+      <button v-if="geoError" class="retry-link" @click="retryGeolocation">
         重试定位
       </button>
     </div>
 
     <!-- ── Has coordinates — show prediction or degraded ────── -->
-    <template v-else-if="coords">
+    <template v-else>
       <!-- Degraded: weather API failed → sunset times only -->
       <div v-if="weatherError" class="degraded-card">
         <div class="degraded-banner">天气数据暂不可用</div>
@@ -132,6 +133,16 @@ import { useSunsetPrediction } from './useSunsetPrediction.js'
 
 // ── Geolocation ─────────────────────────────────────────────────
 const { coords, error: geoError, isLoading: geoLoading, retry: retryGeolocation } = useGeolocation()
+
+// ── Pre-fill and auto-submit when geolocation succeeds ──────────
+watch(coords, (newCoords) => {
+  if (newCoords) {
+    manualLat.value = newCoords.latitude
+    manualLng.value = newCoords.longitude
+    // Auto-use the geolocation result so the prediction loads immediately
+    manualCoords.value = { latitude: newCoords.latitude, longitude: newCoords.longitude }
+  }
+}, { immediate: true })
 
 // ── Manual coordinate input ─────────────────────────────────────
 const manualCoords = ref(null)
