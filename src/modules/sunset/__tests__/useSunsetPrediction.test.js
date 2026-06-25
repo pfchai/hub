@@ -65,6 +65,63 @@ describe('useSunsetPrediction', () => {
       expect(details.value).toBeTruthy()
     })
 
+    it('exposes per-metric quality ratings for good conditions', async () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref({
+        current: {
+          cloud_cover_high: 50,
+          cloud_cover_low: 20,
+          relative_humidity_2m: 60,
+        },
+      })
+
+      const { highCloudQuality, lowCloudQuality, humidityQuality } = useSunsetPrediction(coordsRef, weatherRef)
+
+      await vi.waitFor(() => {
+        expect(highCloudQuality.value).toBe('good')
+      })
+      expect(lowCloudQuality.value).toBe('good')
+      expect(humidityQuality.value).toBe('good')
+    })
+
+    it('exposes per-metric quality ratings for maybe conditions', async () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref({
+        current: {
+          cloud_cover_high: 20,
+          cloud_cover_low: 50,
+          relative_humidity_2m: 35,
+        },
+      })
+
+      const { highCloudQuality, lowCloudQuality, humidityQuality } = useSunsetPrediction(coordsRef, weatherRef)
+
+      await vi.waitFor(() => {
+        expect(highCloudQuality.value).toBe('maybe')
+      })
+      expect(lowCloudQuality.value).toBe('maybe')
+      expect(humidityQuality.value).toBe('maybe')
+    })
+
+    it('exposes per-metric quality ratings for poor conditions', async () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref({
+        current: {
+          cloud_cover_high: 5,
+          cloud_cover_low: 80,
+          relative_humidity_2m: 20,
+        },
+      })
+
+      const { highCloudQuality, lowCloudQuality, humidityQuality } = useSunsetPrediction(coordsRef, weatherRef)
+
+      await vi.waitFor(() => {
+        expect(highCloudQuality.value).toBe('poor')
+      })
+      expect(lowCloudQuality.value).toBe('poor')
+      expect(humidityQuality.value).toBe('poor')
+    })
+
     it('returns "good" at boundary: highCloud=31, humidity=40, lowCloud=69', async () => {
       const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
       const weatherRef = ref({
@@ -231,5 +288,85 @@ describe('useSunsetPrediction', () => {
         expect(quality.value).toBe('unlikely')
       })
     })
+  })
+
+  describe('composite score', () => {
+    it('returns 100 for perfect conditions', async () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref({
+        current: {
+          cloud_cover_high: 50,
+          cloud_cover_low: 20,
+          relative_humidity_2m: 60,
+        },
+      })
+
+      const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+      await vi.waitFor(() => {
+        expect(compositeScore.value).toBe(100)
+      })
+    })
+
+    it('returns 0 for worst conditions', async () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref({
+        current: {
+          cloud_cover_high: 5,
+          cloud_cover_low: 80,
+          relative_humidity_2m: 20,
+        },
+      })
+
+      const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+      await vi.waitFor(() => {
+        expect(compositeScore.value).toBe(0)
+      })
+    })
+
+    it('returns intermediate scores for mixed conditions', async () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref({
+        current: {
+          cloud_cover_high: 50,  // good → 40
+          cloud_cover_low: 50,   // maybe → 15
+          relative_humidity_2m: 35, // maybe → 15
+        },
+      })
+
+      const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+      await vi.waitFor(() => {
+        expect(compositeScore.value).toBe(70)
+      })
+    })
+
+    it('returns 0 when weather data is missing', () => {
+      const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+      const weatherRef = ref(null)
+      const { compositeScore } = useSunsetPrediction(coordsRef, weatherRef)
+
+      expect(compositeScore.value).toBe(0)
+    })
+  })
+
+  it('exposes raw percentage values', async () => {
+    const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+    const weatherRef = ref({
+      current: {
+        cloud_cover_high: 45,
+        cloud_cover_low: 22,
+        relative_humidity_2m: 65,
+      },
+    })
+
+    const { highCloudPct, lowCloudPct, humidityPct } = useSunsetPrediction(coordsRef, weatherRef)
+
+    await vi.waitFor(() => {
+      expect(highCloudPct.value).toBe(45)
+    })
+    expect(lowCloudPct.value).toBe(22)
+    expect(humidityPct.value).toBe(65)
   })
 })
