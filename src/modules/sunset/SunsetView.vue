@@ -405,12 +405,19 @@ function formatDate(date) {
   margin-bottom: 24px;
 }
 
-/* ── Skeleton ───────────────────────────────────────────────────── */
+/* ── Skeleton (updated for dashboard proportions) ────────────── */
 .skeleton-card {
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border, #e7e5e4);
   border-radius: var(--radius, 8px);
   padding: 24px;
+}
+
+.skeleton-arc {
+  height: 100px;
+  background: var(--border, #e7e5e4);
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
 .skeleton-row {
@@ -419,10 +426,9 @@ function formatDate(date) {
   border-radius: 4px;
   margin-bottom: 12px;
 }
-.skeleton-row--wide { width: 60%; }
-.skeleton-row--medium { width: 40%; }
-.skeleton-row--large { height: 36px; width: 50%; }
-.skeleton-row--full { width: 100%; }
+.skeleton-row--wide { width: 70%; }
+.skeleton-row--medium { width: 50%; }
+.skeleton-row--large { height: 36px; width: 40%; margin-left: auto; margin-right: auto; }
 
 .skeleton-divider {
   height: 1px;
@@ -430,27 +436,25 @@ function formatDate(date) {
   margin: 20px 0;
 }
 
-.skeleton-bar-group {
+.skeleton-donuts {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: space-around;
+  gap: 16px;
 }
-.skeleton-bar {
-  height: 8px;
+.skeleton-donut {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   background: var(--border, #e7e5e4);
-  border-radius: 4px;
-  width: 100%;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
-.pulse {
-  animation: pulse 1.5s ease-in-out infinite;
-}
+.pulse { animation: pulse 1.5s ease-in-out infinite; }
 
-/* ── Manual input ───────────────────────────────────────────────── */
+/* ── Manual input (unchanged from original) ──────────────────── */
 .manual-input-card {
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border, #e7e5e4);
@@ -464,9 +468,7 @@ function formatDate(date) {
   margin-bottom: 16px;
 }
 
-.input-group {
-  margin-bottom: 12px;
-}
+.input-group { margin-bottom: 12px; }
 
 .input-label {
   display: block;
@@ -521,11 +523,9 @@ function formatDate(date) {
   cursor: pointer;
   text-decoration: underline;
 }
-.retry-link:hover {
-  color: var(--text-primary, #1c1917);
-}
+.retry-link:hover { color: var(--text-primary, #1c1917); }
 
-/* ── Degraded view ──────────────────────────────────────────────── */
+/* ── Degraded card ───────────────────────────────────────────── */
 .degraded-card {
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border, #e7e5e4);
@@ -566,14 +566,9 @@ function formatDate(date) {
   padding: 8px 0;
   border-bottom: 1px solid var(--border, #e7e5e4);
 }
-.time-row:last-child {
-  border-bottom: none;
-}
+.time-row:last-child { border-bottom: none; }
 
-.time-label {
-  color: var(--text-muted, #78716c);
-  font-size: 0.85rem;
-}
+.time-label { color: var(--text-muted, #78716c); font-size: 0.85rem; }
 
 .time-value {
   font-family: var(--font-mono, monospace);
@@ -586,19 +581,39 @@ function formatDate(date) {
   color: var(--text-primary, #1c1917);
 }
 
-/* ── Scorecard ──────────────────────────────────────────────────── */
-.scorecard {
+/* ── Dashboard card ──────────────────────────────────────────── */
+.dashboard {
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border, #e7e5e4);
   border-radius: var(--radius, 8px);
   padding: 24px;
+  transition: background 0.8s ease, border-color 0.8s ease;
 }
 
-.scorecard-header {
+.dashboard--good {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--bg-card, #ffffff) 60%);
+}
+
+.dashboard--maybe {
+  border-color: rgba(217, 119, 6, 0.2);
+  background: linear-gradient(180deg, rgba(217, 119, 6, 0.04) 0%, var(--bg-card, #ffffff) 60%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .dashboard--good {
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--bg-card, #2a2723) 60%);
+  }
+  .dashboard--maybe {
+    background: linear-gradient(180deg, rgba(217, 119, 6, 0.06) 0%, var(--bg-card, #2a2723) 60%);
+  }
+}
+
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .location-badge {
@@ -609,18 +624,36 @@ function formatDate(date) {
   color: var(--text-muted, #78716c);
 }
 
-.location-icon {
-  font-size: 1rem;
-}
+.location-icon { font-size: 1rem; }
 
 .date-label {
   font-size: 0.8rem;
   color: var(--text-subtle, #a8a29e);
 }
 
+/* ── Sun Arc ─────────────────────────────────────────────────── */
+.sun-arc {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.sun-arc-svg {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+
+.arc-countdown {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  color: var(--text-muted, #78716c);
+  margin-top: 4px;
+}
+
+/* ── Sunset Hero ─────────────────────────────────────────────── */
 .sunset-hero {
   text-align: center;
-  padding: 20px 0;
+  padding: 12px 0 20px;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border, #e7e5e4);
 }
@@ -631,66 +664,118 @@ function formatDate(date) {
   color: var(--text-muted, #78716c);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .hero-time {
   display: block;
   font-family: var(--font-mono, monospace);
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 3rem;
+  font-weight: var(--font-weight-headline, 800);
   color: var(--text-primary, #1c1917);
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .hero-golden {
   display: block;
   font-size: 0.8rem;
   color: var(--text-subtle, #a8a29e);
-  margin-top: 8px;
+  margin-top: 6px;
   font-family: var(--font-mono, monospace);
 }
 
-/* ── Quality meter bars ─────────────────────────────────────────── */
-.quality-meter-group {
+/* ── Donut Charts ────────────────────────────────────────────── */
+.donut-group {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.donut-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.donut-svg {
+  width: 80px;
+  height: 80px;
+}
+
+.donut-ring {
+  transition: stroke-dasharray 0.6s ease, stroke 0.6s ease;
+}
+
+.donut-value {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  font-weight: 600;
+  fill: var(--text-primary, #1c1917);
+}
+
+.donut-label {
+  font-size: 0.75rem;
+  color: var(--text-muted, #78716c);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Composite Score ─────────────────────────────────────────── */
+.score-section {
   margin-bottom: 20px;
 }
 
-.meter-item {
-  margin-bottom: 12px;
-}
-.meter-item:last-child {
-  margin-bottom: 0;
-}
-
-.meter-label-row {
+.score-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-muted, #78716c);
-  margin-bottom: 4px;
+  align-items: baseline;
+  margin-bottom: 8px;
 }
 
-.meter-track {
-  height: 6px;
+.score-label {
+  font-size: 0.8rem;
+  color: var(--text-muted, #78716c);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.score-number {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.6rem;
+  font-weight: 700;
+  transition: color 0.6s ease;
+}
+
+.score-number--good { color: #16a34a; }
+.score-number--maybe { color: #ca8a04; }
+.score-number--unlikely { color: var(--text-muted, #78716c); }
+
+.score-track {
+  height: 8px;
   background: var(--border, #e7e5e4);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
-.meter-fill {
+.score-fill {
   height: 100%;
-  background: var(--accent-own, #2563eb);
-  border-radius: 3px;
-  transition: width 0.6s ease;
+  border-radius: 4px;
+  transition: width 0.8s ease, background 0.6s ease;
 }
 
-/* ── Verdict badge ──────────────────────────────────────────────── */
+.score-fill--good { background: #16a34a; }
+.score-fill--maybe { background: #ca8a04; }
+.score-fill--unlikely { background: var(--text-muted, #78716c); }
+
+/* ── Verdict ─────────────────────────────────────────────────── */
 .verdict {
   text-align: center;
   padding: 16px;
   border-radius: 8px;
   border: 1px solid var(--border, #e7e5e4);
+  transition: background 0.6s ease, border-color 0.6s ease;
 }
 
 .verdict--good {
@@ -736,5 +821,17 @@ function formatDate(date) {
   font-size: 0.85rem;
   color: var(--text-muted, #78716c);
   line-height: 1.5;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .donut-ring,
+  .score-fill,
+  .dashboard,
+  .verdict,
+  .score-number {
+    transition: none;
+  }
+  .pulse { animation: none; }
 }
 </style>
