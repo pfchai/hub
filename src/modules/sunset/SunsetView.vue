@@ -86,11 +86,42 @@
       <div v-else-if="weatherData" class="dashboard" :class="`dashboard--${quality || 'unknown'}`">
         <!-- ── Header: location + date ──────────────────────── -->
         <div class="dashboard-header">
-          <div class="location-badge">
-            <span class="location-icon">&#127758;</span>
-            <span>{{ locationLabel }}</span>
+          <div class="location-row">
+            <div class="location-badge">
+              <span class="location-icon">&#127758;</span>
+              <span>{{ locationLabel }}</span>
+            </div>
+            <button class="edit-coord-btn" title="修改经纬度" @click="openCoordEditor" v-if="!showCoordEditor">
+              &#9998;
+            </button>
           </div>
           <span class="date-label">{{ formatDate(new Date()) }}</span>
+        </div>
+
+        <!-- ── Inline coordinate editor ────────────────────── -->
+        <div v-if="showCoordEditor" class="coord-editor">
+          <div class="coord-editor-fields">
+            <input
+              v-model.number="editLat"
+              type="number"
+              step="any"
+              class="coord-input coord-input--sm"
+              placeholder="纬度"
+              aria-label="纬度"
+            />
+            <input
+              v-model.number="editLng"
+              type="number"
+              step="any"
+              class="coord-input coord-input--sm"
+              placeholder="经度"
+              aria-label="经度"
+            />
+          </div>
+          <div class="coord-editor-actions">
+            <button class="coord-apply-btn" @click="submitCoordEdit">更新</button>
+            <button class="coord-cancel-btn" @click="cancelCoordEdit">取消</button>
+          </div>
         </div>
 
         <!-- ── Sun Arc ───────────────────────────────────────── -->
@@ -218,8 +249,32 @@ function submitManualCoords() {
   }
 }
 
-// Effective coordinates
-const effectiveCoords = computed(() => coords.value || manualCoords.value)
+// Effective coordinates: manual input takes priority (allows overriding geolocation)
+const effectiveCoords = computed(() => manualCoords.value || coords.value)
+
+// ── Inline coordinate editor (on dashboard) ──────────────────────
+const showCoordEditor = ref(false)
+const editLat = ref(null)
+const editLng = ref(null)
+
+function openCoordEditor() {
+  if (effectiveCoords.value) {
+    editLat.value = effectiveCoords.value.latitude
+    editLng.value = effectiveCoords.value.longitude
+  }
+  showCoordEditor.value = true
+}
+
+function submitCoordEdit() {
+  if (editLat.value != null && editLng.value != null) {
+    manualCoords.value = { latitude: editLat.value, longitude: editLng.value }
+    showCoordEditor.value = false
+  }
+}
+
+function cancelCoordEdit() {
+  showCoordEditor.value = false
+}
 
 // ── Weather ─────────────────────────────────────────────────────
 const { data: weatherData, error: weatherError, isLoading: weatherLoading } = useWeather(effectiveCoords)
@@ -611,8 +666,14 @@ function formatDate(date) {
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 16px;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .location-badge {
@@ -623,11 +684,78 @@ function formatDate(date) {
   color: var(--text-muted, #78716c);
 }
 
+.edit-coord-btn {
+  background: none;
+  border: none;
+  color: var(--text-subtle, #a8a29e);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.edit-coord-btn:hover {
+  color: var(--text-primary, #1c1917);
+  background: var(--border, #e7e5e4);
+}
+
+/* ── Inline coordinate editor ────────────────────────────────── */
+.coord-editor {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg-secondary, #f5f3ef);
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--border, #e7e5e4);
+}
+
+.coord-editor-fields {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.coord-input--sm {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.coord-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.coord-apply-btn {
+  flex: 1;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent-own, #2563eb);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coord-cancel-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border, #e7e5e4);
+  border-radius: 6px;
+  background: var(--bg-card, #ffffff);
+  color: var(--text-muted, #78716c);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.coord-cancel-btn:hover {
+  color: var(--text-primary, #1c1917);
+}
+
 .location-icon { font-size: 1rem; }
 
 .date-label {
   font-size: 0.8rem;
   color: var(--text-subtle, #a8a29e);
+  flex-shrink: 0;
 }
 
 /* ── Sun Arc ─────────────────────────────────────────────────── */
