@@ -274,6 +274,13 @@ import { useSunsetPrediction } from './useSunsetPrediction.js'
 // ── Geolocation ─────────────────────────────────────────────────
 const { coords, error: geoError, isLoading: geoLoading, retry: retryGeolocation } = useGeolocation()
 
+// ── Manual coordinate input ─────────────────────────────────────
+// Must be declared BEFORE the coords watch (below) since it accesses
+// manualLat/manualLng with { immediate: true }.
+const manualCoords = ref(null)
+const manualLat = ref(null)
+const manualLng = ref(null)
+
 // ── Pre-fill input fields when geolocation succeeds ──────────────
 watch(coords, (newCoords) => {
   if (newCoords) {
@@ -281,11 +288,6 @@ watch(coords, (newCoords) => {
     manualLng.value = newCoords.longitude
   }
 }, { immediate: true })
-
-// ── Manual coordinate input ─────────────────────────────────────
-const manualCoords = ref(null)
-const manualLat = ref(null)
-const manualLng = ref(null)
 
 function submitManualCoords() {
   if (manualLat.value != null && manualLng.value != null) {
