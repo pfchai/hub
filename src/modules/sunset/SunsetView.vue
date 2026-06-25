@@ -80,12 +80,12 @@
         <div class="sun-arc" v-if="sunsetTime">
           <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
             <defs>
-              <linearGradient id="arcGradDegraded" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient :id="arcGradDegradedId" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="var(--border)" stop-opacity="0.3" />
                 <stop offset="100%" stop-color="var(--border)" stop-opacity="0" />
               </linearGradient>
             </defs>
-            <path :d="arcPath" fill="url(#arcGradDegraded)" stroke="var(--text-muted)" stroke-width="1.5" fill-opacity="0.4" />
+            <path :d="arcPath" :fill="`url(#${arcGradDegradedId})`" stroke="var(--text-muted)" stroke-width="1.5" fill-opacity="0.4" />
             <circle :cx="sunDotX" :cy="sunDotY" r="6" fill="var(--text-muted)" />
           </svg>
           <div class="arc-countdown" v-if="selectedDay === 0">{{ countdownText }}</div>
@@ -171,12 +171,12 @@
         <div class="sun-arc" v-if="sunsetTime">
           <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
             <defs>
-              <linearGradient id="arcGrad" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient :id="arcGradId" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" :stop-color="arcColor" stop-opacity="0.25" />
                 <stop offset="100%" :stop-color="arcColor" stop-opacity="0" />
               </linearGradient>
             </defs>
-            <path :d="arcPath" fill="url(#arcGrad)" :stroke="arcColor" stroke-width="2" fill-opacity="0.35" />
+            <path :d="arcPath" :fill="`url(#${arcGradId})`" :stroke="arcColor" stroke-width="2" fill-opacity="0.35" />
             <circle :cx="sunDotX" :cy="sunDotY" r="6" :fill="arcColor" />
           </svg>
           <div class="arc-countdown" v-if="selectedDay === 0">{{ countdownText }}</div>
@@ -336,6 +336,12 @@ const dayLabels = computed(() => {
   })
 })
 
+// Unique instance ID — prevents SVG gradient ID collisions if the
+// component is rendered multiple times on the same page.
+const uid = Math.random().toString(36).slice(2, 8)
+const arcGradId = computed(() => `arcGrad-${uid}`)
+const arcGradDegradedId = computed(() => `arcGradDegraded-${uid}`)
+
 // ── Weather (3-day forecast) ────────────────────────────────────
 const { data: weatherData, daily, error: weatherError, isLoading: weatherLoading } = useWeather(effectiveCoords, { forecastDays: 3 })
 
@@ -473,6 +479,13 @@ function updateCountdown() {
 }
 
 let countdownTimer = null
+
+// Immediately refresh arc + countdown when sunset time changes
+// (e.g. user edits coordinates), instead of waiting for next 1s tick.
+watch(sunsetTime, () => {
+  updateSunPosition()
+  updateCountdown()
+})
 
 onMounted(() => {
   updateSunPosition()
