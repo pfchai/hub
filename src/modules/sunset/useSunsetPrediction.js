@@ -73,7 +73,7 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
   function rateMetric(value, metric) {
     if (metric === 'highCloud') {
       if (value >= 30 && value <= 70) return 'good'
-      if (value > 10 && value < 30) return 'maybe'
+      if (value >= 10 && value < 30) return 'maybe'
       return 'poor'
     }
     if (metric === 'lowCloud') {
