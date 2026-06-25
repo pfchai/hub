@@ -25,7 +25,14 @@ import * as SunCalc from 'suncalc'
  *   goldenHourEnd: import('vue').Ref<Date | null>,
  *   prediction: import('vue').Ref<string | null>,
  *   quality: import('vue').Ref<'good' | 'maybe' | 'unlikely' | null>,
- *   details: import('vue').Ref<string | null>
+ *   details: import('vue').Ref<string | null>,
+ *   highCloudQuality: import('vue').Ref<'good' | 'maybe' | 'poor' | null>,
+ *   lowCloudQuality: import('vue').Ref<'good' | 'maybe' | 'poor' | null>,
+ *   humidityQuality: import('vue').Ref<'good' | 'maybe' | 'poor' | null>,
+ *   compositeScore: import('vue').Ref<number>,
+ *   highCloudPct: import('vue').Ref<number>,
+ *   lowCloudPct: import('vue').Ref<number>,
+ *   humidityPct: import('vue').Ref<number>
  * }}
  */
 export function useSunsetPrediction(coordsRef, weatherDataRef) {
@@ -41,6 +48,65 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
   const quality = ref(null)
   /** @type {import('vue').Ref<string | null>} */
   const details = ref(null)
+
+  /** @type {import('vue').Ref<'good' | 'maybe' | 'poor' | null>} */
+  const highCloudQuality = ref(null)
+  /** @type {import('vue').Ref<'good' | 'maybe' | 'poor' | null>} */
+  const lowCloudQuality = ref(null)
+  /** @type {import('vue').Ref<'good' | 'maybe' | 'poor' | null>} */
+  const humidityQuality = ref(null)
+  /** @type {import('vue').Ref<number>} */
+  const compositeScore = ref(0)
+  /** @type {import('vue').Ref<number>} */
+  const highCloudPct = ref(0)
+  /** @type {import('vue').Ref<number>} */
+  const lowCloudPct = ref(0)
+  /** @type {import('vue').Ref<number>} */
+  const humidityPct = ref(0)
+
+  /**
+   * Rate a single metric against good/maybe/poor thresholds.
+   * @param {number} value — percent 0–100
+   * @param {'highCloud' | 'lowCloud' | 'humidity'} metric
+   * @returns {'good' | 'maybe' | 'poor'}
+   */
+  function rateMetric(value, metric) {
+    if (metric === 'highCloud') {
+      if (value >= 30 && value <= 70) return 'good'
+      if (value > 10 && value < 30) return 'maybe'
+      return 'poor'
+    }
+    if (metric === 'lowCloud') {
+      if (value < 30) return 'good'
+      if (value >= 30 && value <= 70) return 'maybe'
+      return 'poor'
+    }
+    // humidity
+    if (value >= 40 && value <= 80) return 'good'
+    if ((value >= 30 && value < 40) || value > 80) return 'maybe'
+    return 'poor'
+  }
+
+  /**
+   * Compute composite score 0–100 from three metrics.
+   * @param {number} highCloud
+   * @param {number} lowCloud
+   * @param {number} humidity
+   * @returns {number} integer 0–100
+   */
+  function computeScore(highCloud, lowCloud, humidity) {
+    let score = 0
+    // High cloud (max 40)
+    if (highCloud >= 30 && highCloud <= 70) score += 40
+    else if (highCloud >= 10 && highCloud <= 30) score += 20
+    // Low cloud (max 30)
+    if (lowCloud < 30) score += 30
+    else if (lowCloud >= 30 && lowCloud <= 70) score += 15
+    // Humidity (max 30)
+    if (humidity >= 40 && humidity <= 80) score += 30
+    else if ((humidity >= 30 && humidity < 40) || humidity > 80) score += 15
+    return score
+  }
 
   // ── Compute sun times when coordinates change ──────────────────
   watch(
@@ -69,6 +135,13 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
         prediction.value = null
         quality.value = null
         details.value = null
+        highCloudQuality.value = null
+        lowCloudQuality.value = null
+        humidityQuality.value = null
+        compositeScore.value = 0
+        highCloudPct.value = 0
+        lowCloudPct.value = 0
+        humidityPct.value = 0
         return
       }
 
@@ -77,6 +150,20 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
       const lowCloud = cloud_cover_low ?? 0
       const humidity = relative_humidity_2m ?? 0
 
+      // Expose raw percentages
+      highCloudPct.value = highCloud
+      lowCloudPct.value = lowCloud
+      humidityPct.value = humidity
+
+      // Per-metric quality
+      highCloudQuality.value = rateMetric(highCloud, 'highCloud')
+      lowCloudQuality.value = rateMetric(lowCloud, 'lowCloud')
+      humidityQuality.value = rateMetric(humidity, 'humidity')
+
+      // Composite score
+      compositeScore.value = computeScore(highCloud, lowCloud, humidity)
+
+      // Overall verdict (unchanged logic)
       if (highCloud > 30 && humidity >= 40 && humidity <= 80 && lowCloud < 70) {
         quality.value = 'good'
         prediction.value = '值得一看'
@@ -94,5 +181,11 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
     { immediate: true }
   )
 
-  return { sunsetTime, goldenHourStart, goldenHourEnd, prediction, quality, details }
+  return {
+    sunsetTime, goldenHourStart, goldenHourEnd,
+    prediction, quality, details,
+    highCloudQuality, lowCloudQuality, humidityQuality,
+    compositeScore,
+    highCloudPct, lowCloudPct, humidityPct,
+  }
 }
