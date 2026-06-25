@@ -19,6 +19,7 @@ import * as SunCalc from 'suncalc'
 /**
  * @param {import('vue').Ref<{latitude: number, longitude: number} | null>} coordsRef
  * @param {import('vue').Ref<Object | null>} weatherDataRef
+ * @param {import('vue').Ref<number>} [dayOffset] — 0=today, 1=tomorrow, 2=day-after
  * @returns {{
  *   sunsetTime: import('vue').Ref<Date | null>,
  *   goldenHourStart: import('vue').Ref<Date | null>,
@@ -35,7 +36,8 @@ import * as SunCalc from 'suncalc'
  *   humidityPct: import('vue').Ref<number>
  * }}
  */
-export function useSunsetPrediction(coordsRef, weatherDataRef) {
+export function useSunsetPrediction(coordsRef, weatherDataRef, dayOffset) {
+  const offsetRef = dayOffset || ref(0)
   /** @type {import('vue').Ref<Date | null>} */
   const sunsetTime = ref(null)
   /** @type {import('vue').Ref<Date | null>} */
@@ -108,10 +110,10 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
     return score
   }
 
-  // ── Compute sun times when coordinates change ──────────────────
+  // ── Compute sun times when coordinates or day offset change ────
   watch(
-    coordsRef,
-    (coords) => {
+    [coordsRef, offsetRef],
+    ([coords, offset]) => {
       if (!coords) {
         sunsetTime.value = null
         goldenHourStart.value = null
@@ -119,7 +121,8 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
         return
       }
 
-      const times = SunCalc.getTimes(new Date(), coords.latitude, coords.longitude)
+      const date = new Date(Date.now() + (offset || 0) * 86400000)
+      const times = SunCalc.getTimes(date, coords.latitude, coords.longitude)
       sunsetTime.value = times.sunset
       goldenHourStart.value = times.goldenHour
       goldenHourEnd.value = times.sunset

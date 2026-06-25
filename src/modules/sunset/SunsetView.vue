@@ -58,6 +58,16 @@
       <!-- Degraded: weather API failed → sunset times only + arc -->
       <div v-if="weatherError" class="degraded-card">
         <div class="degraded-banner">天气数据暂不可用</div>
+        <!-- ── Day tabs ─────────────────────────────────────── -->
+        <div class="day-tabs">
+          <button
+            v-for="(label, i) in dayLabels"
+            :key="i"
+            class="day-tab"
+            :class="{ 'day-tab--active': selectedDay === i }"
+            @click="selectedDay = i"
+          >{{ label }}</button>
+        </div>
         <img
           v-if="mapUrl"
           :src="mapUrl"
@@ -78,7 +88,8 @@
             <path :d="arcPath" fill="url(#arcGradDegraded)" stroke="var(--text-muted)" stroke-width="1.5" fill-opacity="0.4" />
             <circle :cx="sunDotX" :cy="sunDotY" r="6" fill="var(--text-muted)" />
           </svg>
-          <div class="arc-countdown">{{ countdownText }}</div>
+          <div class="arc-countdown" v-if="selectedDay === 0">{{ countdownText }}</div>
+          <div class="arc-countdown" v-else>{{ dayLabels[selectedDay] }}</div>
         </div>
         <h2 class="section-title">日落时间</h2>
         <div class="time-row">
@@ -104,7 +115,7 @@
               &#9998;
             </button>
           </div>
-          <span class="date-label">{{ formatDate(new Date()) }}</span>
+          <span class="date-label">{{ formatDate(dayDate) }}</span>
         </div>
 
         <!-- ── Inline coordinate editor ────────────────────── -->
@@ -133,6 +144,18 @@
           </div>
         </div>
 
+        <!-- ── Day tabs ─────────────────────────────────────── -->
+        <div class="day-tabs">
+          <button
+            v-for="(label, i) in dayLabels"
+            :key="i"
+            class="day-tab"
+            :class="{ 'day-tab--active': selectedDay === i }"
+            :disabled="!daily[i]"
+            @click="selectedDay = i"
+          >{{ label }}</button>
+        </div>
+
         <!-- ── Map thumbnail ────────────────────────────────── -->
         <img
           v-if="mapUrl"
@@ -156,7 +179,8 @@
             <path :d="arcPath" fill="url(#arcGrad)" :stroke="arcColor" stroke-width="2" fill-opacity="0.35" />
             <circle :cx="sunDotX" :cy="sunDotY" r="6" :fill="arcColor" />
           </svg>
-          <div class="arc-countdown">{{ countdownText }}</div>
+          <div class="arc-countdown" v-if="selectedDay === 0">{{ countdownText }}</div>
+          <div class="arc-countdown" v-else>{{ dayLabels[selectedDay] }}</div>
         </div>
 
         <!-- ── Sunset Time Hero ──────────────────────────────── -->
@@ -296,8 +320,31 @@ function cancelCoordEdit() {
   showCoordEditor.value = false
 }
 
-// ── Weather ─────────────────────────────────────────────────────
-const { data: weatherData, error: weatherError, isLoading: weatherLoading } = useWeather(effectiveCoords)
+// ── Multi-day support ────────────────────────────────────────────
+const selectedDay = ref(0)
+const dayOffset = computed(() => selectedDay.value)
+
+const dayDate = computed(() => new Date(Date.now() + selectedDay.value * 86400000))
+
+const dayLabels = computed(() => {
+  const today = new Date()
+  return [0, 1, 2].map((d) => {
+    const date = new Date(today.getTime() + d * 86400000)
+    const labels = ['今天', '明天', '后天']
+    const day = date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+    return `${labels[d]} ${day}`
+  })
+})
+
+// ── Weather (3-day forecast) ────────────────────────────────────
+const { data: weatherData, daily, error: weatherError, isLoading: weatherLoading } = useWeather(effectiveCoords, { forecastDays: 3 })
+
+// Weather snapshot for the selected day — wraps in { current } shape
+const dailyWeather = computed(() => {
+  const snap = daily.value[selectedDay.value]
+  if (!snap) return null
+  return { current: snap }
+})
 
 // ── Sunset prediction ───────────────────────────────────────────
 const {
@@ -314,7 +361,7 @@ const {
   highCloudPct,
   lowCloudPct,
   humidityPct,
-} = useSunsetPrediction(effectiveCoords, weatherData)
+} = useSunsetPrediction(effectiveCoords, dailyWeather, dayOffset)
 
 // ── Loading state ────────────────────────────────────────────────
 const isLoading = computed(() => geoLoading.value || (effectiveCoords.value && weatherLoading.value))
@@ -784,6 +831,61 @@ function formatDate(date) {
   font-size: 0.8rem;
   color: var(--text-subtle, #a8a29e);
   flex-shrink: 0;
+}
+
+/* ── Day tabs ────────────────────────────────────────────────────── */
+.day-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border: 1px solid var(--border, #e7e5e4);
+  border-radius: var(--radius, 8px);
+  overflow: hidden;
+}
+
+.day-tab {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  background: var(--bg-card, #ffffff);
+  color: var(--text-muted, #78716c);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.day-tab:not(:last-child) {
+  border-right: 1px solid var(--border, #e7e5e4);
+}
+.day-tab:hover {
+  background: var(--bg-secondary, #f5f3ef);
+  color: var(--text-primary, #1c1917);
+}
+.day-tab--active {
+  background: var(--accent-own, #2563eb);
+  color: #fff;
+  font-weight: 600;
+}
+.day-tab--active:hover {
+  background: var(--accent-own, #2563eb);
+  color: #fff;
+}
+.day-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-tab {
+    background: var(--bg-card, #2a2723);
+  }
+  .day-tab:hover {
+    background: var(--bg-secondary, #24211d);
+  }
+  .day-tab--active {
+    background: var(--accent-own, #3b82f6);
+  }
 }
 
 /* ── Map thumbnail ──────────────────────────────────────────────── */

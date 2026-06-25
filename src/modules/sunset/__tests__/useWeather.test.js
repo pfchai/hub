@@ -18,6 +18,19 @@ vi.mock('@/composables/useApi.js', () => ({
   },
 }))
 
+// Helper: build a minimal hourly response for N days
+function makeHourlyResponse(fields = {}, days = 1) {
+  const hours = days * 24
+  const defaults = {
+    cloud_cover: Array(hours).fill(0),
+    cloud_cover_high: Array(hours).fill(0),
+    cloud_cover_low: Array(hours).fill(0),
+    relative_humidity_2m: Array(hours).fill(0),
+    ...fields,
+  }
+  return { hourly: defaults }
+}
+
 describe('useWeather', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -28,24 +41,28 @@ describe('useWeather', () => {
   })
 
   it('fetches weather data when coords are provided', async () => {
-    const mockResponse = {
-      current: {
-        cloud_cover: 50,
-        cloud_cover_high: 40,
-        cloud_cover_low: 20,
-        relative_humidity_2m: 60,
-      },
-    }
+    const mockResponse = makeHourlyResponse({
+      cloud_cover: Array(24).fill(50),
+      cloud_cover_high: Array(24).fill(40),
+      cloud_cover_low: Array(24).fill(20),
+      relative_humidity_2m: Array(24).fill(60),
+    })
     useApi.mockResolvedValue(mockResponse)
 
     const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
-    const { data, error, isLoading } = useWeather(coordsRef)
+    const { data, error, isLoading, daily } = useWeather(coordsRef)
 
-    // Wait for the async watcher to complete
     await vi.waitFor(() => {
-      expect(data.value).toEqual(mockResponse)
+      expect(data.value).toBeTruthy()
     })
 
+    expect(data.value.current).toEqual({
+      cloud_cover: 50,
+      cloud_cover_high: 40,
+      cloud_cover_low: 20,
+      relative_humidity_2m: 60,
+    })
+    expect(daily.value).toHaveLength(1)
     expect(error.value).toBeNull()
     expect(isLoading.value).toBe(false)
   })
@@ -79,33 +96,33 @@ describe('useWeather', () => {
 
   it('refetches when coords change', async () => {
     useApi
-      .mockResolvedValueOnce({ current: { cloud_cover: 10 } })
-      .mockResolvedValueOnce({ current: { cloud_cover: 80 } })
+      .mockResolvedValueOnce(makeHourlyResponse({ cloud_cover_high: Array(24).fill(10) }))
+      .mockResolvedValueOnce(makeHourlyResponse({ cloud_cover_high: Array(24).fill(80) }))
 
     const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
     const { data } = useWeather(coordsRef)
 
     await vi.waitFor(() => {
-      expect(data.value).toEqual({ current: { cloud_cover: 10 } })
+      expect(data.value.current.cloud_cover_high).toBe(10)
     })
 
     coordsRef.value = { latitude: 40.71, longitude: -74.01 }
 
     await vi.waitFor(() => {
-      expect(data.value).toEqual({ current: { cloud_cover: 80 } })
+      expect(data.value.current.cloud_cover_high).toBe(80)
     })
 
     expect(useApi).toHaveBeenCalledTimes(2)
   })
 
-  it('validates response structure and errors on missing current', async () => {
-    useApi.mockResolvedValue({ hourly: { cloud_cover: [] } })
+  it('validates response structure and errors on missing hourly', async () => {
+    useApi.mockResolvedValue({ current: {} })  // no hourly field
 
     const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
     const { data, error, isLoading } = useWeather(coordsRef)
 
     await vi.waitFor(() => {
-      expect(error.value).toBe('Weather data missing current conditions')
+      expect(error.value).toBe('Weather data missing hourly forecast')
     })
 
     expect(data.value).toBeNull()
@@ -137,7 +154,7 @@ describe('useWeather', () => {
     await nextTick()
     expect(isLoading.value).toBe(true)
 
-    resolvePromise({ current: { cloud_cover: 50 } })
+    resolvePromise(makeHourlyResponse({ cloud_cover: Array(24).fill(50) }))
 
     await vi.waitFor(() => {
       expect(isLoading.value).toBe(false)
@@ -145,7 +162,7 @@ describe('useWeather', () => {
   })
 
   it('calls useApi with correct Open-Meteo URL', async () => {
-    useApi.mockResolvedValue({ current: { cloud_cover: 50 } })
+    useApi.mockResolvedValue(makeHourlyResponse())
 
     const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
     useWeather(coordsRef)
@@ -161,5 +178,21 @@ describe('useWeather', () => {
     expect(calledUrl).toContain('cloud_cover_high')
     expect(calledUrl).toContain('cloud_cover_low')
     expect(calledUrl).toContain('relative_humidity_2m')
+    expect(calledUrl).toContain('hourly=')
+    expect(calledUrl).toContain('forecast_days=1')
+  })
+
+  it('requests 3 days of forecast when forecastDays option is set', async () => {
+    useApi.mockResolvedValue(makeHourlyResponse({}, 3))
+
+    const coordsRef = ref({ latitude: 31.23, longitude: 121.47 })
+    const { daily } = useWeather(coordsRef, { forecastDays: 3 })
+
+    await vi.waitFor(() => {
+      expect(daily.value).toHaveLength(3)
+    })
+
+    const calledUrl = useApi.mock.calls[0][0]
+    expect(calledUrl).toContain('forecast_days=3')
   })
 })
