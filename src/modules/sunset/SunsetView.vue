@@ -362,7 +362,7 @@ onUnmounted(() => {
 const DONUT_CIRCUM = 2 * Math.PI * 32
 
 function donutDash(pct) {
-  const p = Math.min(100, Math.max(0, pct))
+  const p = Math.min(100, Math.max(0, pct ?? 0))
   const fill = (p / 100) * DONUT_CIRCUM
   return `${fill} ${DONUT_CIRCUM - fill}`
 }
