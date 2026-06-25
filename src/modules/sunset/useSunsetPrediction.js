@@ -98,7 +98,7 @@ export function useSunsetPrediction(coordsRef, weatherDataRef) {
     let score = 0
     // High cloud (max 40)
     if (highCloud >= 30 && highCloud <= 70) score += 40
-    else if (highCloud >= 10 && highCloud <= 30) score += 20
+    else if (highCloud >= 10 && highCloud < 30) score += 20
     // Low cloud (max 30)
     if (lowCloud < 30) score += 30
     else if (lowCloud >= 30 && lowCloud <= 70) score += 15

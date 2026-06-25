@@ -367,10 +367,9 @@ function donutDash(pct) {
   return `${fill} ${DONUT_CIRCUM - fill}`
 }
 
-function donutColor(qualityRef) {
-  const q = qualityRef?.value ?? null
-  if (q === 'good') return '#16a34a'
-  if (q === 'maybe') return '#ca8a04'
+function donutColor(quality) {
+  if (quality === 'good') return '#16a34a'
+  if (quality === 'maybe') return '#ca8a04'
   return 'var(--text-muted)'
 }
 
