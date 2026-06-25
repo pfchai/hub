@@ -5,20 +5,21 @@
 
     <!-- ── Loading skeleton ──────────────────────────────────── -->
     <div v-if="isLoading" class="skeleton-card">
-      <div class="skeleton-row skeleton-row--wide pulse" />
-      <div class="skeleton-row skeleton-row--medium pulse" />
+      <div class="skeleton-arc pulse" />
       <div class="skeleton-divider" />
       <div class="skeleton-row skeleton-row--large pulse" />
-      <div class="skeleton-row skeleton-row--full pulse" />
+      <div class="skeleton-row skeleton-row--medium pulse" />
       <div class="skeleton-divider" />
-      <div class="skeleton-bar-group">
-        <div class="skeleton-bar pulse" />
-        <div class="skeleton-bar pulse" />
-        <div class="skeleton-bar pulse" />
+      <div class="skeleton-donuts">
+        <div class="skeleton-donut pulse" />
+        <div class="skeleton-donut pulse" />
+        <div class="skeleton-donut pulse" />
       </div>
+      <div class="skeleton-divider" />
+      <div class="skeleton-row skeleton-row--wide pulse" />
     </div>
 
-    <!-- ── Manual input card (geo denied or not yet resolved) ── -->
+    <!-- ── Manual input card ─────────────────────────────────── -->
     <div v-else-if="!effectiveCoords" class="manual-input-card">
       <p v-if="geoError" class="manual-hint">{{ geoError }}</p>
       <p v-else class="manual-hint">请输入你的坐标来查看晚霞预测</p>
@@ -54,9 +55,22 @@
 
     <!-- ── Has coordinates — show prediction or degraded ────── -->
     <template v-else>
-      <!-- Degraded: weather API failed → sunset times only -->
+      <!-- Degraded: weather API failed → sunset times only + arc -->
       <div v-if="weatherError" class="degraded-card">
         <div class="degraded-banner">天气数据暂不可用</div>
+        <div class="sun-arc" v-if="sunsetTime">
+          <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
+            <defs>
+              <linearGradient id="arcGradDegraded" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--border)" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="var(--border)" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path :d="arcPath" fill="url(#arcGradDegraded)" stroke="var(--text-muted)" stroke-width="1.5" fill-opacity="0.4" />
+            <circle :cx="sunDotX" :cy="sunDotY" r="6" fill="var(--text-muted)" />
+          </svg>
+          <div class="arc-countdown">{{ countdownText }}</div>
+        </div>
         <h2 class="section-title">日落时间</h2>
         <div class="time-row">
           <span class="time-label">日落</span>
@@ -68,9 +82,10 @@
         </div>
       </div>
 
-      <!-- Success: full scorecard -->
-      <div v-else-if="weatherData" class="scorecard">
-        <div class="scorecard-header">
+      <!-- Success: full dashboard -->
+      <div v-else-if="weatherData" class="dashboard" :class="`dashboard--${quality || 'unknown'}`">
+        <!-- ── Header: location + date ──────────────────────── -->
+        <div class="dashboard-header">
           <div class="location-badge">
             <span class="location-icon">&#127758;</span>
             <span>{{ locationLabel }}</span>
@@ -78,6 +93,22 @@
           <span class="date-label">{{ formatDate(new Date()) }}</span>
         </div>
 
+        <!-- ── Sun Arc ───────────────────────────────────────── -->
+        <div class="sun-arc" v-if="sunsetTime">
+          <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
+            <defs>
+              <linearGradient id="arcGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" :stop-color="arcColor" stop-opacity="0.25" />
+                <stop offset="100%" :stop-color="arcColor" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path :d="arcPath" fill="url(#arcGrad)" :stroke="arcColor" stroke-width="2" fill-opacity="0.35" />
+            <circle :cx="sunDotX" :cy="sunDotY" r="6" :fill="arcColor" />
+          </svg>
+          <div class="arc-countdown">{{ countdownText }}</div>
+        </div>
+
+        <!-- ── Sunset Time Hero ──────────────────────────────── -->
         <div class="sunset-hero">
           <span class="hero-label">日落时间</span>
           <span class="hero-time">{{ formatTime(sunsetTime) }}</span>
@@ -86,38 +117,72 @@
           </span>
         </div>
 
-        <div class="quality-meter-group">
-          <div class="meter-item">
-            <div class="meter-label-row">
-              <span>高云</span>
-              <span>{{ highCloudPct }}%</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill" :style="{ width: highCloudPct + '%' }" />
-            </div>
+        <!-- ── Three Donut Charts ────────────────────────────── -->
+        <div class="donut-group">
+          <div class="donut-item">
+            <svg viewBox="0 0 80 80" class="donut-svg">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="6" />
+              <circle
+                cx="40" cy="40" r="32" fill="none"
+                :stroke="donutColor(highCloudQuality)"
+                stroke-width="6" stroke-linecap="round"
+                :stroke-dasharray="donutDash(highCloudPct)"
+                stroke-dashoffset="0"
+                transform="rotate(-90 40 40)"
+                class="donut-ring"
+              />
+              <text x="40" y="38" text-anchor="middle" class="donut-value">{{ highCloudPct }}%</text>
+            </svg>
+            <span class="donut-label">高云</span>
           </div>
-          <div class="meter-item">
-            <div class="meter-label-row">
-              <span>湿度</span>
-              <span>{{ humidityPct }}%</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill" :style="{ width: humidityPct + '%' }" />
-            </div>
+          <div class="donut-item">
+            <svg viewBox="0 0 80 80" class="donut-svg">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="6" />
+              <circle
+                cx="40" cy="40" r="32" fill="none"
+                :stroke="donutColor(lowCloudQuality)"
+                stroke-width="6" stroke-linecap="round"
+                :stroke-dasharray="donutDash(lowCloudPct)"
+                stroke-dashoffset="0"
+                transform="rotate(-90 40 40)"
+                class="donut-ring"
+              />
+              <text x="40" y="38" text-anchor="middle" class="donut-value">{{ lowCloudPct }}%</text>
+            </svg>
+            <span class="donut-label">低云</span>
           </div>
-          <div class="meter-item">
-            <div class="meter-label-row">
-              <span>低云</span>
-              <span>{{ lowCloudPct }}%</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill" :style="{ width: lowCloudPct + '%' }" />
-            </div>
+          <div class="donut-item">
+            <svg viewBox="0 0 80 80" class="donut-svg">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="6" />
+              <circle
+                cx="40" cy="40" r="32" fill="none"
+                :stroke="donutColor(humidityQuality)"
+                stroke-width="6" stroke-linecap="round"
+                :stroke-dasharray="donutDash(humidityPct)"
+                stroke-dashoffset="0"
+                transform="rotate(-90 40 40)"
+                class="donut-ring"
+              />
+              <text x="40" y="38" text-anchor="middle" class="donut-value">{{ humidityPct }}%</text>
+            </svg>
+            <span class="donut-label">湿度</span>
           </div>
         </div>
 
+        <!-- ── Composite Score ───────────────────────────────── -->
+        <div class="score-section">
+          <div class="score-header">
+            <span class="score-label">综合评分</span>
+            <span class="score-number" :class="`score-number--${quality}`">{{ compositeScore }}</span>
+          </div>
+          <div class="score-track">
+            <div class="score-fill" :class="`score-fill--${quality}`" :style="{ width: compositeScore + '%' }" />
+          </div>
+        </div>
+
+        <!-- ── Verdict ───────────────────────────────────────── -->
         <div class="verdict" :class="verdictClass">
-          <span class="verdict-badge">{{ prediction }}</span>
+          <span class="verdict-badge">{{ verdictEmoji }} {{ prediction }}</span>
           <p class="verdict-detail">{{ details }}</p>
         </div>
       </div>
@@ -126,7 +191,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useGeolocation } from './useGeolocation.js'
 import { useWeather } from './useWeather.js'
 import { useSunsetPrediction } from './useSunsetPrediction.js'
@@ -139,7 +204,6 @@ watch(coords, (newCoords) => {
   if (newCoords) {
     manualLat.value = newCoords.latitude
     manualLng.value = newCoords.longitude
-    // Pre-fill only — user clicks "查询" to submit
   }
 }, { immediate: true })
 
@@ -154,7 +218,7 @@ function submitManualCoords() {
   }
 }
 
-// Effective coordinates: geolocation result or manual input
+// Effective coordinates
 const effectiveCoords = computed(() => coords.value || manualCoords.value)
 
 // ── Weather ─────────────────────────────────────────────────────
@@ -168,25 +232,147 @@ const {
   prediction,
   quality,
   details,
+  highCloudQuality,
+  lowCloudQuality,
+  humidityQuality,
+  compositeScore,
+  highCloudPct,
+  lowCloudPct,
+  humidityPct,
 } = useSunsetPrediction(effectiveCoords, weatherData)
 
-// ── Derived state ───────────────────────────────────────────────
+// ── Loading state ────────────────────────────────────────────────
 const isLoading = computed(() => geoLoading.value || (effectiveCoords.value && weatherLoading.value))
 
-const highCloudPct = computed(() => weatherData.value?.current?.cloud_cover_high ?? 0)
-const lowCloudPct = computed(() => weatherData.value?.current?.cloud_cover_low ?? 0)
-const humidityPct = computed(() => weatherData.value?.current?.relative_humidity_2m ?? 0)
-
+// ── Verdict ──────────────────────────────────────────────────────
 const verdictClass = computed(() => {
   if (!quality.value) return ''
   return `verdict--${quality.value}`
 })
 
+const verdictEmoji = computed(() => {
+  if (quality.value === 'good') return '✨'
+  if (quality.value === 'maybe') return '👀'
+  return '🌫️'
+})
+
+// ── Location label ───────────────────────────────────────────────
 const locationLabel = computed(() => {
   if (!effectiveCoords.value) return '未知位置'
   const { latitude, longitude } = effectiveCoords.value
   return `${latitude.toFixed(2)}°${latitude >= 0 ? 'N' : 'S'}, ${longitude.toFixed(2)}°${longitude >= 0 ? 'E' : 'W'}`
 })
+
+// ── Sun Arc computation ──────────────────────────────────────────
+const arcColor = computed(() => {
+  if (quality.value === 'good') return '#f59e0b'
+  if (quality.value === 'maybe') return '#d97706'
+  return '#78716c'
+})
+
+const arcPath = computed(() => {
+  // Semi-ellipse arc from left (sunrise) to right (sunset)
+  const w = 400, h = 130
+  const margin = 30
+  const cy = h - 15
+  const startX = margin, endX = w - margin
+  const controlY = cy - 90
+  return `M ${startX} ${cy} Q ${w / 2} ${controlY} ${endX} ${cy}`
+})
+
+// Current sun position along the arc (0 = sunrise, 1 = sunset)
+const sunProgress = ref(0.5)
+
+const sunDotX = computed(() => {
+  const t = sunProgress.value
+  return 30 + t * 340 // 30 → 370 along 400px viewBox
+})
+
+const sunDotY = computed(() => {
+  const t = sunProgress.value
+  const cy = 115
+  const controlY = 25
+  // Quadratic bezier: y(t) = (1-t)²*y0 + 2(1-t)t*y1 + t²*y2
+  return (1-t)*(1-t)*cy + 2*(1-t)*t*controlY + t*t*cy
+})
+
+function updateSunPosition() {
+  if (!sunsetTime.value) {
+    sunProgress.value = 0.5
+    return
+  }
+  const now = Date.now()
+  const sunsetMs = sunsetTime.value.getTime()
+  // Sunrise is approx 12h before sunset in summer, use goldenHour as rough sunrise
+  const sunriseMs = goldenHourStart.value
+    ? goldenHourStart.value.getTime() - 3600000 * 8 // rough sunrise ~8h before golden hour
+    : sunsetMs - 3600000 * 14
+
+  if (now <= sunriseMs) {
+    sunProgress.value = 0
+  } else if (now >= sunsetMs) {
+    sunProgress.value = 1
+  } else {
+    sunProgress.value = (now - sunriseMs) / (sunsetMs - sunriseMs)
+  }
+}
+
+// ── Countdown timer ──────────────────────────────────────────────
+const countdownText = ref('')
+
+function updateCountdown() {
+  if (!sunsetTime.value) {
+    countdownText.value = ''
+    return
+  }
+  const now = Date.now()
+  const sunsetMs = sunsetTime.value.getTime()
+  const diff = sunsetMs - now
+
+  if (diff <= 0) {
+    countdownText.value = '日落已过'
+  } else {
+    const hours = Math.floor(diff / 3600000)
+    const minutes = Math.floor((diff % 3600000) / 60000)
+    if (hours > 0) {
+      countdownText.value = `距日落 ${hours}h ${minutes}m`
+    } else {
+      countdownText.value = `距日落 ${minutes}m`
+    }
+  }
+}
+
+let countdownTimer = null
+
+onMounted(() => {
+  updateSunPosition()
+  updateCountdown()
+  countdownTimer = setInterval(() => {
+    updateSunPosition()
+    updateCountdown()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (countdownTimer) clearInterval(countdownTimer)
+})
+
+// ── Donut chart helpers ──────────────────────────────────────────
+// Circumference of r=32 circle
+const DONUT_CIRCUM = 2 * Math.PI * 32
+
+function donutDash(pct) {
+  const p = Math.min(100, Math.max(0, pct))
+  const fill = (p / 100) * DONUT_CIRCUM
+  return `${fill} ${DONUT_CIRCUM - fill}`
+}
+
+function donutColor(qualityRef) {
+  const q = qualityRef?.value ?? null
+  if (q === 'good') return '#16a34a'
+  if (q === 'maybe') return '#ca8a04'
+  return 'var(--text-muted)'
+}
 
 // ── Formatters ──────────────────────────────────────────────────
 function formatTime(date) {
