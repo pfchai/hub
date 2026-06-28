@@ -68,13 +68,6 @@
             @click="selectedDay = i"
           >{{ label }}</button>
         </div>
-        <a
-          v-if="osmLink"
-          :href="osmLink"
-          target="_blank"
-          rel="noopener"
-          class="osm-link"
-        >&#127758; 在 OpenStreetMap 中查看</a>
         <div class="sun-arc" v-if="sunsetTime">
           <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
             <defs>
@@ -153,15 +146,6 @@
             @click="selectedDay = i"
           >{{ label }}</button>
         </div>
-
-        <!-- ── OpenStreetMap link ────────────────────────────── -->
-        <a
-          v-if="osmLink"
-          :href="osmLink"
-          target="_blank"
-          rel="noopener"
-          class="osm-link"
-        >&#127758; 在 OpenStreetMap 中查看</a>
 
         <!-- ── Sun Arc ───────────────────────────────────────── -->
         <div class="sun-arc" v-if="sunsetTime">
@@ -387,13 +371,6 @@ const locationLabel = computed(() => {
   if (!effectiveCoords.value) return '未知位置'
   const { latitude, longitude } = effectiveCoords.value
   return `${latitude.toFixed(2)}°${latitude >= 0 ? 'N' : 'S'}, ${longitude.toFixed(2)}°${longitude >= 0 ? 'E' : 'W'}`
-})
-
-// ── OpenStreetMap link ──────────────────────────────────────────
-const osmLink = computed(() => {
-  if (!effectiveCoords.value) return null
-  const { latitude, longitude } = effectiveCoords.value
-  return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=9/${latitude}/${longitude}`
 })
 
 // ── Sun Arc computation ──────────────────────────────────────────
@@ -895,36 +872,6 @@ function formatDate(date) {
   }
   .day-tab--active {
     background: var(--accent-own, #3b82f6);
-  }
-}
-
-/* ── OpenStreetMap link ──────────────────────────────────────────── */
-.osm-link {
-  display: block;
-  text-align: center;
-  padding: 10px 16px;
-  margin: 0 auto 16px;
-  max-width: 400px;
-  border: 1px solid var(--border, #e7e5e4);
-  border-radius: var(--radius, 8px);
-  background: var(--bg-card, #ffffff);
-  color: var(--accent-own, #2563eb);
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.15s ease;
-}
-.osm-link:hover {
-  background: var(--bg-secondary, #f5f3ef);
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .osm-link {
-    background: var(--bg-card, #2a2723);
-  }
-  .osm-link:hover {
-    background: var(--bg-secondary, #24211d);
   }
 }
 
