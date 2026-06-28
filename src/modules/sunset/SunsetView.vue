@@ -68,15 +68,13 @@
             @click="selectedDay = i"
           >{{ label }}</button>
         </div>
-        <img
-          v-if="mapUrl"
-          :src="mapUrl"
-          alt="位置地图"
-          class="map-thumb"
-          loading="lazy"
-          width="400"
-          height="160"
-        />
+        <a
+          v-if="osmLink"
+          :href="osmLink"
+          target="_blank"
+          rel="noopener"
+          class="osm-link"
+        >&#127758; 在 OpenStreetMap 中查看</a>
         <div class="sun-arc" v-if="sunsetTime">
           <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
             <defs>
@@ -156,16 +154,14 @@
           >{{ label }}</button>
         </div>
 
-        <!-- ── Map thumbnail ────────────────────────────────── -->
-        <img
-          v-if="mapUrl"
-          :src="mapUrl"
-          alt="位置地图"
-          class="map-thumb"
-          loading="lazy"
-          width="400"
-          height="160"
-        />
+        <!-- ── OpenStreetMap link ────────────────────────────── -->
+        <a
+          v-if="osmLink"
+          :href="osmLink"
+          target="_blank"
+          rel="noopener"
+          class="osm-link"
+        >&#127758; 在 OpenStreetMap 中查看</a>
 
         <!-- ── Sun Arc ───────────────────────────────────────── -->
         <div class="sun-arc" v-if="sunsetTime">
@@ -393,12 +389,11 @@ const locationLabel = computed(() => {
   return `${latitude.toFixed(2)}°${latitude >= 0 ? 'N' : 'S'}, ${longitude.toFixed(2)}°${longitude >= 0 ? 'E' : 'W'}`
 })
 
-// ── Static map thumbnail (OpenStreetMap, no API key) ────────────
-const mapUrl = computed(() => {
+// ── OpenStreetMap link ──────────────────────────────────────────
+const osmLink = computed(() => {
   if (!effectiveCoords.value) return null
   const { latitude, longitude } = effectiveCoords.value
-  const center = `${latitude},${longitude}`
-  return `https://staticmap.openstreetmap.de/staticmap.php?center=${center}&zoom=9&size=400x160&markers=${center},red-pushpin`
+  return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=9/${latitude}/${longitude}`
 })
 
 // ── Sun Arc computation ──────────────────────────────────────────
@@ -903,23 +898,33 @@ function formatDate(date) {
   }
 }
 
-/* ── Map thumbnail ──────────────────────────────────────────────── */
-.map-thumb {
+/* ── OpenStreetMap link ──────────────────────────────────────────── */
+.osm-link {
   display: block;
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  aspect-ratio: 400 / 160;
-  border-radius: var(--radius, 8px);
-  border: 1px solid var(--border, #e7e5e4);
-  object-fit: cover;
+  text-align: center;
+  padding: 10px 16px;
   margin: 0 auto 16px;
+  max-width: 400px;
+  border: 1px solid var(--border, #e7e5e4);
+  border-radius: var(--radius, 8px);
+  background: var(--bg-card, #ffffff);
+  color: var(--accent-own, #2563eb);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.osm-link:hover {
+  background: var(--bg-secondary, #f5f3ef);
+  text-decoration: none;
 }
 
 @media (prefers-color-scheme: dark) {
-  .map-thumb {
-    opacity: 0.85;
-    filter: brightness(0.9);
+  .osm-link {
+    background: var(--bg-card, #2a2723);
+  }
+  .osm-link:hover {
+    background: var(--bg-secondary, #24211d);
   }
 }
 
