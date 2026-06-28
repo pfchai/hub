@@ -68,6 +68,15 @@
             @click="selectedDay = i"
           >{{ label }}</button>
         </div>
+        <img
+          v-if="mapUrl"
+          :src="mapUrl"
+          alt="位置地图"
+          class="map-thumb"
+          loading="lazy"
+          width="400"
+          height="160"
+        />
         <div class="sun-arc" v-if="sunsetTime">
           <svg viewBox="0 0 400 130" class="sun-arc-svg" aria-label="太阳轨迹">
             <defs>
@@ -146,6 +155,17 @@
             @click="selectedDay = i"
           >{{ label }}</button>
         </div>
+
+        <!-- ── Map (Amap static, cached by browser) ────────────── -->
+        <img
+          v-if="mapUrl"
+          :src="mapUrl"
+          alt="位置地图"
+          class="map-thumb"
+          loading="lazy"
+          width="400"
+          height="160"
+        />
 
         <!-- ── Sun Arc ───────────────────────────────────────── -->
         <div class="sun-arc" v-if="sunsetTime">
@@ -371,6 +391,15 @@ const locationLabel = computed(() => {
   if (!effectiveCoords.value) return '未知位置'
   const { latitude, longitude } = effectiveCoords.value
   return `${latitude.toFixed(2)}°${latitude >= 0 ? 'N' : 'S'}, ${longitude.toFixed(2)}°${longitude >= 0 ? 'E' : 'W'}`
+})
+
+// ── Amap static map (cached by browser via deterministic URL) ────
+const amapKey = import.meta.env.VITE_AMAP_KEY || ''
+const mapUrl = computed(() => {
+  if (!effectiveCoords.value || !amapKey || amapKey === 'your_amap_key_here') return null
+  const { latitude, longitude } = effectiveCoords.value
+  // Amap uses LNG,LAT order; browser caches URL → no re-fetch on day-tab switch
+  return `https://restapi.amap.com/v3/staticmap?location=${longitude},${latitude}&zoom=9&size=400*160&markers=mid,,A:${longitude},${latitude}&key=${amapKey}`
 })
 
 // ── Sun Arc computation ──────────────────────────────────────────
@@ -872,6 +901,26 @@ function formatDate(date) {
   }
   .day-tab--active {
     background: var(--accent-own, #3b82f6);
+  }
+}
+
+/* ── Map thumbnail ──────────────────────────────────────────────── */
+.map-thumb {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  aspect-ratio: 400 / 160;
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--border, #e7e5e4);
+  object-fit: cover;
+  margin: 0 auto 16px;
+  background: var(--bg-secondary, #f5f3ef);
+}
+
+@media (prefers-color-scheme: dark) {
+  .map-thumb {
+    opacity: 0.9;
   }
 }
 

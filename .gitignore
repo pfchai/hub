@@ -17,3 +17,4 @@ public/editor-md/*
 .DS_Store
 *.log
 .gstack/
+.env
