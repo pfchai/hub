@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import DetailView from '../views/DetailView.vue'
+import DetailView from '../modules/curation/DetailView.vue'
 
 vi.mock('../composables/useProjectsState.js', () => ({
   useProjectsState: vi.fn(() => ({

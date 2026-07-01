@@ -10,7 +10,7 @@
  */
 
 import { ref, watch } from 'vue'
-import { useApi, ApiError } from '@/composables/useApi.js'
+import { useApi } from '@/composables/useApi.js'
 
 const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast'
 
@@ -111,11 +111,7 @@ export function useWeather(coordsRef, opts = {}) {
         data.value = { ...result, current: snapshots[0] }
         daily.value = snapshots
       } catch (err) {
-        if (err instanceof ApiError) {
-          error.value = err.message
-        } else {
-          error.value = err.message || 'Failed to fetch weather data'
-        }
+        error.value = err.message || 'Failed to fetch weather data'
       } finally {
         isLoading.value = false
       }

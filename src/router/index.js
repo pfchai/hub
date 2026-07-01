@@ -14,45 +14,6 @@ const moduleRoutes = modules.flatMap((m) =>
   }))
 )
 
-// ─── Module route-level error boundary wrapper ──────────────────
-// Wraps lazy-loaded module components so that import() failures
-// (network errors, 404 chunk, syntax error) are caught by
-// onErrorCaptured and show a retry card instead of a blank page.
-const RouteErrorBoundary = {
-  name: 'RouteErrorBoundary',
-  props: {
-    moduleId: { type: String, default: 'unknown' },
-  },
-  template: `
-    <div v-if="error" class="route-error" style="text-align:center;padding:48px;color:var(--text-muted)">
-      <p style="font-size:1.1rem;margin-bottom:8px">加载失败</p>
-      <p style="font-size:0.85rem;margin-bottom:16px;color:var(--text-subtle)">
-        模块 "{{ moduleId }}" 无法加载
-      </p>
-      <button
-        @click="retry"
-        style="padding:8px 20px;border:1px solid var(--border);border-radius:8px;background:var(--bg-primary);color:var(--text-primary);cursor:pointer;font-size:0.85rem"
-      >
-        点此重试
-      </button>
-    </div>
-    <slot v-else />
-  `,
-  data() {
-    return { error: false }
-  },
-  errorCaptured() {
-    this.error = true
-    return false
-  },
-  methods: {
-    retry() {
-      this.error = false
-      this.$forceUpdate()
-    },
-  },
-}
-
 const routes = [
   // ── Dashboard home ────────────────────────────────────────────
   {
@@ -105,5 +66,4 @@ const router = createRouter({
   },
 })
 
-export { RouteErrorBoundary }
 export default router

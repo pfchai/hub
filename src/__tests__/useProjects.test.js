@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useProjects } from '../composables/useProjects.js'
+import { useProjectsState as useProjects } from '../composables/useProjectsState.js'
 
 describe('useProjects', () => {
   beforeEach(() => {

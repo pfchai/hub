@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ListView from '../views/ListView.vue'
+import ListView from '../modules/curation/ListView.vue'
 import { ref, reactive } from 'vue'
 
 // Mock matchMedia for scroll reveal composable
@@ -19,41 +19,9 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 const mockProjects = [
-  {
-    id: 'p1',
-    type: 'own',
-    title: 'Project 1',
-    tagline: 'First',
-    tags: ['Vue'],
-    stars: 100,
-    url: 'https://a.com',
-    addedAt: '2026-01-01',
-    description: '',
-  },
-  {
-    id: 'p2',
-    type: 'curated',
-    title: 'Project 2',
-    tagline: 'Second',
-    tags: ['React'],
-    stars: 200,
-    url: 'https://b.com',
-    addedAt: '2026-02-01',
-    description: '',
-    whyRecommend: 'Great',
-    highlights: ['Fast'],
-  },
-  {
-    id: 'p3',
-    type: 'own',
-    title: 'Project 3',
-    tagline: 'Third',
-    tags: ['Vue', 'Vite'],
-    stars: 50,
-    url: 'https://c.com',
-    addedAt: '2026-03-01',
-    description: '',
-  },
+  { id: 'p1', type: 'own', title: 'Project 1', tagline: 'First', tags: ['Vue'], stars: 100, url: 'https://a.com', addedAt: '2026-01-01', description: '' },
+  { id: 'p2', type: 'curated', title: 'Project 2', tagline: 'Second', tags: ['React'], stars: 200, url: 'https://b.com', addedAt: '2026-02-01', description: '', whyRecommend: 'Great', highlights: ['Fast'] },
+  { id: 'p3', type: 'own', title: 'Project 3', tagline: 'Third', tags: ['Vue', 'Vite'], stars: 50, url: 'https://c.com', addedAt: '2026-03-01', description: '' },
 ]
 
 const defaultMockReturn = {
@@ -68,12 +36,13 @@ const defaultMockReturn = {
   toggleTag: vi.fn(),
   search: vi.fn(),
   setSort: vi.fn(),
+  getProject: vi.fn(),
   resetFilters: vi.fn(),
 }
 
-// Mock useProjectsRouting — the new composable used by the migrated ListView.
-vi.mock('../composables/useProjectsRouting.js', () => ({
-  useProjectsRouting: vi.fn(() => defaultMockReturn),
+// Mock useProjectsState — ListView calls it directly (routing watchers inlined)
+vi.mock('../composables/useProjectsState.js', () => ({
+  useProjectsState: vi.fn(() => defaultMockReturn),
 }))
 
 const mockRoute = reactive({ params: {}, query: {} })
@@ -84,8 +53,8 @@ vi.mock('vue-router', () => ({
 
 describe('ListView', () => {
   beforeEach(async () => {
-    const { useProjectsRouting } = await import('../composables/useProjectsRouting.js')
-    useProjectsRouting.mockReturnValue(defaultMockReturn)
+    const { useProjectsState } = await import('../composables/useProjectsState.js')
+    useProjectsState.mockReturnValue(defaultMockReturn)
     mockRoute.params = {}
     mockRoute.query = {}
   })
@@ -103,21 +72,11 @@ describe('ListView', () => {
   })
 
   it('shows empty state when filteredProjects is empty', async () => {
-    const { useProjectsRouting } = await import('../composables/useProjectsRouting.js')
+    const { useProjectsState } = await import('../composables/useProjectsState.js')
     const emptyRef = ref([])
-    useProjectsRouting.mockReturnValue({
-      projects: ref(mockProjects),
+    useProjectsState.mockReturnValue({
+      ...defaultMockReturn,
       filteredProjects: emptyRef,
-      activeType: ref('all'),
-      activeTags: ref(new Set()),
-      searchQuery: ref(''),
-      sortBy: ref('stars'),
-      allTags: ref(['React', 'Vite', 'Vue']),
-      filterByType: vi.fn(),
-      toggleTag: vi.fn(),
-      search: vi.fn(),
-      setSort: vi.fn(),
-      resetFilters: vi.fn(),
     })
     const wrapper = mount(ListView)
     expect(wrapper.find('.list-view__empty').exists()).toBe(true)

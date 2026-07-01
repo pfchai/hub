@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { useApi, ApiError } from '../composables/useApi.js'
+import { useApi } from '../composables/useApi.js'
+
+const isApiError = (err, code) => err instanceof Error && err.code === code
 
 describe('useApi', () => {
   beforeEach(() => {
@@ -21,7 +23,7 @@ describe('useApi', () => {
     expect(result).toEqual({ hello: 'world' })
   })
 
-  it('throws ApiError with code "http" on non-ok response', async () => {
+  it('throws error with code "http" on non-ok response', async () => {
     globalThis.fetch.mockResolvedValue({
       ok: false,
       status: 500,
@@ -29,14 +31,13 @@ describe('useApi', () => {
       text: () => Promise.resolve(''),
     })
 
-    await expect(useApi('https://example.com/api')).rejects.toThrow(ApiError)
     await expect(useApi('https://example.com/api')).rejects.toMatchObject({
       code: 'http',
       status: 500,
     })
   })
 
-  it('throws ApiError with code "rate-limit" on 429', async () => {
+  it('throws error with code "rate-limit" on 429', async () => {
     globalThis.fetch.mockResolvedValue({
       ok: false,
       status: 429,
@@ -50,7 +51,7 @@ describe('useApi', () => {
     })
   })
 
-  it('throws ApiError with code "timeout" on slow requests', async () => {
+  it('throws error with code "timeout" on slow requests', async () => {
     globalThis.fetch.mockImplementation(
       (url, { signal } = {}) =>
         new Promise((resolve, reject) => {
@@ -67,7 +68,7 @@ describe('useApi', () => {
     })
   })
 
-  it('throws ApiError with code "parse" on invalid JSON', async () => {
+  it('throws error with code "parse" on invalid JSON', async () => {
     globalThis.fetch.mockResolvedValue({
       ok: true,
       status: 200,
@@ -93,26 +94,5 @@ describe('useApi', () => {
         headers: expect.objectContaining({ Authorization: 'Bearer xyz' }),
       })
     )
-  })
-})
-
-describe('ApiError', () => {
-  it('is an Error with name ApiError', () => {
-    const err = new ApiError('network', 'something went wrong')
-    expect(err).toBeInstanceOf(Error)
-    expect(err.name).toBe('ApiError')
-  })
-
-  it('carries code, message, and optional status', () => {
-    const err = new ApiError('http', 'Not Found', 404)
-    expect(err.code).toBe('http')
-    expect(err.message).toBe('Not Found')
-    expect(err.status).toBe(404)
-  })
-
-  it('works without a status code', () => {
-    const err = new ApiError('timeout', 'timed out')
-    expect(err.code).toBe('timeout')
-    expect(err.status).toBeUndefined()
   })
 })

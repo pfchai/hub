@@ -42,14 +42,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useProjectsRouting } from '../../composables/useProjectsRouting.js'
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useProjectsState } from '../../composables/useProjectsState.js'
 import { useScrollReveal } from '../../composables/useScrollReveal.js'
 import FilterBar from '../../components/FilterBar.vue'
 import FeaturedCard from '../../components/FeaturedCard.vue'
 import ProjectCard from '../../components/ProjectCard.vue'
 
 const { register } = useScrollReveal()
+const state = useProjectsState()
+const route = useRoute()
+
+watch(() => route.params.tag, (t) => { if (t) state.toggleTag(t) }, { immediate: true })
+watch(() => route.query.tag, (t) => { if (t) state.toggleTag(t) }, { immediate: true })
+watch(() => route.query.q, (q) => { if (q) state.search(q) }, { immediate: true })
 
 const {
   filteredProjects,
@@ -60,7 +67,7 @@ const {
   search,
   setSort,
   resetFilters,
-} = useProjectsRouting()
+} = state
 
 const featuredProjects = computed(() => {
   const featured = filteredProjects.value.filter((p) => p.featured)
