@@ -11,7 +11,7 @@
         v-for="mod in featuredModules"
         :key="mod.id"
         :module="mod"
-        :count="moduleCounts[mod.id] ?? null"
+        :count="0"
       />
     </div>
 
@@ -27,29 +27,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { modules, getFeaturedModules } from '../modules/registry.js'
+import { getFeaturedModules } from '../modules/registry.js'
 import ModuleCard from '../components/ModuleCard.vue'
 import projectsData from '../data/projects.json'
 
-// ── Hero tagline ──
-const tagline = 'A window into what I\'m curious about.'
-
-// ── Featured modules ──
 const featuredModules = getFeaturedModules()
-
-// ── Project counts for curation badges ──
-const curationModuleIds = computed(() =>
-  modules.filter((m) => m.type === 'curation').map((m) => m.id)
-)
-
-const moduleCounts = computed(() => {
-  const counts = {}
-  for (const id of curationModuleIds.value) {
-    counts[id] = projectsData.length
-  }
-  return counts
-})
 </script>
 
 <style scoped>

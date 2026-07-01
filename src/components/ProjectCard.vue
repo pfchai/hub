@@ -8,7 +8,7 @@
       <div class="project-card__footer">
         <span class="project-card__stars">⭐ {{ formatStars(project.stars) }}</span>
         <span class="project-card__tags">
-          <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable @tag-click.stop />
+          <TagBadge v-for="tag in project.tags" :key="tag" :tag="tag" clickable />
         </span>
         <span class="project-card__type" :class="`project-card__type--${project.type}`">{{
           project.type

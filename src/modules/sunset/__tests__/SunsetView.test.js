@@ -218,12 +218,12 @@ describe('SunsetView', () => {
 
   // ── Degraded state ──────────────────────────────────────────────
 
-  it('shows degraded card when weather API fails', () => {
+  it('shows degraded banner when weather API fails', () => {
     mockCoords.value = { latitude: 31.23, longitude: 121.47 }
     mockWeatherError.value = 'API error'
 
     const wrapper = mount(SunsetView)
-    expect(wrapper.find('.degraded-card').exists()).toBe(true)
+    expect(wrapper.find('.degraded-banner').exists()).toBe(true)
     expect(wrapper.find('.degraded-banner').text()).toBe('天气数据暂不可用')
   })
 

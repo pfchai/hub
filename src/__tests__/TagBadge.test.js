@@ -25,12 +25,10 @@ describe('TagBadge', () => {
     expect(wrapper.find('span').exists()).toBe(true)
   })
 
-  it('emits click event when clicked', async () => {
+  it('navigates via href on click when clickable', () => {
     const wrapper = mount(TagBadge, {
       props: { tag: 'Vue', clickable: true },
     })
-    await wrapper.find('a').trigger('click')
-    expect(wrapper.emitted('tag-click')).toBeTruthy()
-    expect(wrapper.emitted('tag-click')[0]).toEqual(['Vue'])
+    expect(wrapper.find('a').attributes('href')).toBe('#/tag/Vue')
   })
 })

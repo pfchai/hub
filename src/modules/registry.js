@@ -1,14 +1,8 @@
 /**
- * Hub 2.0 — Module Registry
+ * Hub — Module Registry
  *
- * Single source of truth for all modules. Adding a new module here
- * automatically registers its routes with vue-router, adds a nav entry
- * in AppHeader, and (if featured: true) places a ModuleCard on the dashboard.
- *
- * Usage:
- * ```js
- * import { modules, getModule, getFeaturedModules } from '@/modules/registry.js'
- * ```
+ * Single source of truth for all modules. Adding a module here
+ * automatically registers routes and adds nav entries.
  *
  * @module modules/registry
  */
@@ -43,20 +37,11 @@ export const modules = [
 ]
 
 // ─── Dev-mode validation ────────────────────────────────────────
-// Warns on startup for common configuration mistakes. Only runs in
-// development (vite dev / npm test). Tree-shaken in production builds
-// since the entire block is `if (import.meta.env.DEV)`.
 if (import.meta.env.DEV) {
   validateRegistry(modules)
 }
 
-/**
- * Validate module registry for common issues.
- * Pure function — no side effects beyond console.warn.
- *
- * @param {import('./types.js').Module[]} mods
- */
-export function validateRegistry(mods) {
+function validateRegistry(mods) {
   const seenIds = new Set()
   const seenPaths = new Set()
 
@@ -114,19 +99,6 @@ export function validateRegistry(mods) {
 
 // ─── Convenience helpers ────────────────────────────────────────
 
-/**
- * Get a module by its id.
- * @param {string} id
- * @returns {import('./types.js').Module | undefined}
- */
-export function getModule(id) {
-  return modules.find((m) => m.id === id)
-}
-
-/**
- * Get all featured modules (shown as cards on the dashboard).
- * @returns {import('./types.js').Module[]}
- */
 export function getFeaturedModules() {
   return modules.filter((m) => m.featured)
 }
