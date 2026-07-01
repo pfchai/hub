@@ -10,5 +10,8 @@
 /gift-book      /gift-book/       301
 /gift-book/*    /gift-book/:splat 200
 
-# Hub SPA fallback — everything else
+# Static assets — serve directly, don't apply SPA fallback
+/assets/*       /assets/:splat    200
+
+# Hub SPA fallback — everything else (excludes /assets/)
 /*              /index.html       200
