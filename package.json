@@ -29,6 +29,7 @@
     "check:contrast": "node scripts/check-contrast.js"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
     "marked": "^15.0.0",
     "suncalc": "^2.0.0",
     "vue": "^3.5.0",
