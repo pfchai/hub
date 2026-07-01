@@ -31,6 +31,8 @@ jobs:
         run: npm test
 
       - run: npm run build
+        env:
+          VITE_AMAP_KEY: ${{ secrets.VITE_AMAP_KEY }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
